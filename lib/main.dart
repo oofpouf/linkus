@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:linkus/constants/routes.dart';
 import 'package:linkus/view/login_view.dart';
 import 'package:linkus/view/register_view.dart';
 import 'package:linkus/view/verify_email_view.dart'; // so that you can call devtools.log instead of just log
@@ -18,9 +19,9 @@ void main() {
       ),
       home: const HomePage(),
       routes: {
-        '/login/': (context) => const LoginView(),
-        '/register/': (context) => const RegisterView(),
-        '/main/': (context) => const MainView(),
+        loginRoute: (context) => const LoginView(),
+        registerRoute: (context) => const RegisterView(),
+        mainRoute: (context) => const MainView(),
       },
     ),
   );
@@ -80,7 +81,7 @@ class _MainViewState extends State<MainView> {
                     if (shouldLogout) {
                       await FirebaseAuth.instance.signOut();
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login/',
+                        loginRoute,
                         (_) => false,
                       );
                     }
