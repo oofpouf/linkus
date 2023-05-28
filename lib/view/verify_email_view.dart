@@ -19,14 +19,20 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Icon(
+                Icons.email_rounded,
+                size: 90,
+                color: Color.fromARGB(255, 63, 50, 30),
+              ),
               // Verify title
               const SizedBox(height: 25),
               const Text(
                 'Verify your email',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 36,
-                    color: Color.fromARGB(255, 63, 50, 30)),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 36,
+                  color: Color.fromARGB(255, 63, 50, 30),
+                ),
               ),
               const SizedBox(height: 30),
 
