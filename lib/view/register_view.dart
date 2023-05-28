@@ -168,6 +168,7 @@ class _RegisterViewState extends State<RegisterView> {
                 children: [
                   const Text('Already a member? ',
                       style: TextStyle(
+                        fontSize: 14,
                         color: Color.fromARGB(255, 241, 233, 221),
                         fontWeight: FontWeight.bold,
                       )),
@@ -179,6 +180,7 @@ class _RegisterViewState extends State<RegisterView> {
                     child: const Text(
                       'Login now!',
                       style: TextStyle(
+                        fontSize: 14,
                         color: Color.fromARGB(255, 63, 50, 30),
                         fontWeight: FontWeight.bold,
                       ),

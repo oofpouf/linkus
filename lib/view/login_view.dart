@@ -174,6 +174,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   const Text('Not a member? ',
                       style: TextStyle(
+                        fontSize: 14,
                         color: Color.fromARGB(255, 241, 233, 221),
                         fontWeight: FontWeight.bold,
                       )),
@@ -185,6 +186,7 @@ class _LoginViewState extends State<LoginView> {
                     child: const Text(
                       'Register now!',
                       style: TextStyle(
+                        fontSize: 14,
                         color: Color.fromARGB(255, 63, 50, 30),
                         fontWeight: FontWeight.bold,
                       ),
