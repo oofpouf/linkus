@@ -101,7 +101,7 @@ class _MainViewState extends State<MainView> {
               return const [
                 PopupMenuItem<MenuAction>(
                   value: MenuAction.logout,
-                  child: Text('Log out'),
+                  child: Text('Logout'),
                 ),
               ];
             },
@@ -129,13 +129,13 @@ Future<bool> showLogOutDialog(BuildContext context) {
       return AlertDialog(
         backgroundColor: const Color.fromARGB(255, 241, 233, 221),
         title: const Text(
-          'Log out',
+          'Logout',
           style: TextStyle(
             color: Color.fromARGB(255, 63, 50, 30),
           ),
         ),
         content: const Text(
-          'Are you sure you want to log out',
+          'Are you sure you want to logout?',
           style: TextStyle(
             color: Color.fromARGB(255, 63, 50, 30),
           ),
@@ -158,7 +158,7 @@ Future<bool> showLogOutDialog(BuildContext context) {
               Navigator.of(context).pop(true);
             },
             child: const Text(
-              'Log out',
+              'Logout',
               style: TextStyle(
                 color: Color.fromARGB(255, 63, 50, 30),
                 fontWeight: FontWeight.bold,
