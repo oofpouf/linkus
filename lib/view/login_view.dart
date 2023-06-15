@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import '../utilities/show_error_dialogue.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -39,12 +40,15 @@ class _LoginViewState extends State<LoginView> {
             children: [
               // Login title
               const SizedBox(height: 25),
-              const Text(
+              Text(
                 'Login',
-                style: TextStyle(
+                style: GoogleFonts.montserrat(
+                  textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 36,
-                    color: Color.fromARGB(255, 63, 50, 30)),
+                    fontSize: 40,
+                    color: Color.fromARGB(255, 68, 23, 13),
+                  ),
+                ),
               ),
               const SizedBox(height: 30),
 
@@ -106,7 +110,7 @@ class _LoginViewState extends State<LoginView> {
                 child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 63, 50, 30),
+                    color: const Color.fromARGB(255, 68, 23, 13),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -154,12 +158,14 @@ class _LoginViewState extends State<LoginView> {
                           );
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         'Login',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 241, 233, 221),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                        style: GoogleFonts.comfortaa(
+                          textStyle: const TextStyle(
+                            color: Color.fromARGB(255, 241, 233, 221),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -172,23 +178,29 @@ class _LoginViewState extends State<LoginView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Not a member? ',
-                      style: TextStyle(
+                  Text(
+                    'Not a member? ',
+                    style: GoogleFonts.comfortaa(
+                      textStyle: const TextStyle(
                         fontSize: 14,
                         color: Color.fromARGB(255, 241, 233, 221),
                         fontWeight: FontWeight.bold,
-                      )),
+                      ),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           registerRoute, (route) => false);
                     },
-                    child: const Text(
+                    child: Text(
                       'Register now!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 63, 50, 30),
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

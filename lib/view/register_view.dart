@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -39,12 +40,15 @@ class _RegisterViewState extends State<RegisterView> {
             children: [
               // Register title
               const SizedBox(height: 25),
-              const Text(
+              Text(
                 'Register',
-                style: TextStyle(
+                style: GoogleFonts.montserrat(
+                  textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 36,
-                    color: Color.fromARGB(255, 63, 50, 30)),
+                    fontSize: 40,
+                    color: Color.fromARGB(255, 68, 23, 13),
+                  ),
+                ),
               ),
               const SizedBox(height: 30),
 
@@ -104,7 +108,7 @@ class _RegisterViewState extends State<RegisterView> {
                 child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 63, 50, 30),
+                    color: const Color.fromARGB(255, 68, 23, 13),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -121,8 +125,8 @@ class _RegisterViewState extends State<RegisterView> {
                           final user = FirebaseAuth.instance.currentUser;
                           await user?.sendEmailVerification(); // send email
                           Navigator.of(context).pushNamed(
-                              verifyEmailRoute); // push named so that entire route is not replaced 
-                              //
+                              verifyEmailRoute); // push named so that entire route is not replaced
+                          //
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             await showErrorDialog(
@@ -152,12 +156,14 @@ class _RegisterViewState extends State<RegisterView> {
                           );
                         }
                       },
-                      child: const Text(
+                      child: Text(
                         'Register',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 241, 233, 221),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                        style: GoogleFonts.comfortaa(
+                          textStyle: const TextStyle(
+                            color: Color.fromARGB(255, 241, 233, 221),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -169,23 +175,29 @@ class _RegisterViewState extends State<RegisterView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text('Already a member? ',
-                      style: TextStyle(
+                  Text(
+                    'Already a member? ',
+                    style: GoogleFonts.comfortaa(
+                      textStyle: const TextStyle(
                         fontSize: 14,
                         color: Color.fromARGB(255, 241, 233, 221),
                         fontWeight: FontWeight.bold,
-                      )),
+                      ),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           loginRoute, (route) => false);
                     },
-                    child: const Text(
+                    child: Text(
                       'Login now!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 63, 50, 30),
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),

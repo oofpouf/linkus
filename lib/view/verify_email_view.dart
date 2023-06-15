@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
 
 class VerifyEmailView extends StatefulWidget {
@@ -22,28 +23,32 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               const Icon(
                 Icons.email_rounded,
                 size: 90,
-                color: Color.fromARGB(255, 63, 50, 30),
+                color: Color.fromARGB(255, 68, 23, 13),
               ),
               // Verify title
               const SizedBox(height: 25),
-              const Text(
+              Text(
                 'Verify your email',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 36,
-                  color: Color.fromARGB(255, 63, 50, 30),
+                style: GoogleFonts.montserrat(
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 40,
+                    color: Color.fromARGB(255, 68, 23, 13),
+                  ),
                 ),
               ),
               const SizedBox(height: 30),
 
               // Email verification sent text
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text(
                   "We've sent you an email verification. Please open it to verify your account.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color.fromARGB(255, 241, 233, 221),
+                  style: GoogleFonts.comfortaa(
+                    textStyle: const TextStyle(
+                      fontSize: 15,
+                      color: Color.fromARGB(255, 241, 233, 221),
+                    ),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -51,13 +56,15 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               const SizedBox(height: 15),
 
               // Resend verification text
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text(
                   "Haven't received a verification email? Click the button below",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color.fromARGB(255, 241, 233, 221),
+                  style: GoogleFonts.comfortaa(
+                    textStyle: const TextStyle(
+                      fontSize: 15,
+                      color: Color.fromARGB(255, 241, 233, 221),
+                    ),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -70,7 +77,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 child: Container(
                   padding: const EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 63, 50, 30),
+                    color: const Color.fromARGB(255, 68, 23, 13),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -79,12 +86,14 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                         final user = FirebaseAuth.instance.currentUser;
                         await user?.sendEmailVerification();
                       },
-                      child: const Text(
+                      child: Text(
                         'Resend email verification',
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 241, 233, 221),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                        style: GoogleFonts.comfortaa(
+                          textStyle: const TextStyle(
+                            color: Color.fromARGB(255, 241, 233, 221),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -96,12 +105,16 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("Or return to",
-                      style: TextStyle(
+                  Text(
+                    "Or return to",
+                    style: GoogleFonts.comfortaa(
+                      textStyle: const TextStyle(
                         fontSize: 14,
                         color: Color.fromARGB(255, 241, 233, 221),
                         fontWeight: FontWeight.bold,
-                      )),
+                      ),
+                    ),
+                  ),
 
                   // Return to register button
                   GestureDetector(
@@ -112,12 +125,14 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                         (route) => false,
                       );
                     },
-                    child: const Text(
+                    child: Text(
                       ' register page',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 63, 50, 30),
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   )
