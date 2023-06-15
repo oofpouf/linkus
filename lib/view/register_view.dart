@@ -38,19 +38,32 @@ class _RegisterViewState extends State<RegisterView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Link icon
+              Image.asset(
+                'lib/icons/link.png',
+                height: 200,
+                width: 200,
+              ),
+              const SizedBox(height: 10),
+
               // Register title
-              const SizedBox(height: 25),
-              Text(
-                'Register',
-                style: GoogleFonts.montserrat(
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40,
-                    color: Color.fromARGB(255, 68, 23, 13),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Register',
+                    style: GoogleFonts.montserrat(
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Color.fromARGB(255, 68, 23, 13),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
 
               // Email textfield
               Padding(
@@ -68,6 +81,7 @@ class _RegisterViewState extends State<RegisterView> {
                       enableSuggestions: false,
                       autocorrect: false,
                       keyboardType: TextInputType.emailAddress,
+                      cursorColor: const Color.fromARGB(255, 68, 23, 13),
                       decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Enter your email here'),
@@ -93,6 +107,7 @@ class _RegisterViewState extends State<RegisterView> {
                       obscureText: true,
                       enableSuggestions: false,
                       autocorrect: false,
+                      cursorColor: const Color.fromARGB(255, 68, 23, 13),
                       decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: 'Enter your password here'),
@@ -105,57 +120,57 @@ class _RegisterViewState extends State<RegisterView> {
               // Register button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 68, 23, 13),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        try {
-                          await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-                          final user = FirebaseAuth.instance.currentUser;
-                          await user?.sendEmailVerification(); // send email
-                          Navigator.of(context).pushNamed(
-                              verifyEmailRoute); // push named so that entire route is not replaced
-                          //
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'weak-password') {
-                            await showErrorDialog(
-                              context,
-                              'Weak password',
-                            );
-                          } else if (e.code == 'email-already-in-use') {
-                            await showErrorDialog(
-                              context,
-                              'Email is already in use',
-                            );
-                          } else if (e.code == 'invalid-email') {
-                            await showErrorDialog(
-                              context,
-                              'Invalid email address',
-                            );
-                          } else {
-                            await showErrorDialog(
-                              context,
-                              'Error: ${e.code}',
-                            );
-                          }
-                        } catch (e) {
-                          await showErrorDialog(
-                            context,
-                            e.toString(),
-                          );
-                        }
-                      },
+                child: GestureDetector(
+                  onTap: () async {
+                    final email = _email.text;
+                    final password = _password.text;
+                    try {
+                      await FirebaseAuth.instance
+                          .createUserWithEmailAndPassword(
+                        email: email,
+                        password: password,
+                      );
+                      final user = FirebaseAuth.instance.currentUser;
+                      await user?.sendEmailVerification(); // send email
+                      Navigator.of(context).pushNamed(
+                          verifyEmailRoute); // push named so that entire route is not replaced
+                      //
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'weak-password') {
+                        await showErrorDialog(
+                          context,
+                          'Weak password',
+                        );
+                      } else if (e.code == 'email-already-in-use') {
+                        await showErrorDialog(
+                          context,
+                          'Email is already in use',
+                        );
+                      } else if (e.code == 'invalid-email') {
+                        await showErrorDialog(
+                          context,
+                          'Invalid email address',
+                        );
+                      } else {
+                        await showErrorDialog(
+                          context,
+                          'Error: ${e.code}',
+                        );
+                      }
+                    } catch (e) {
+                      await showErrorDialog(
+                        context,
+                        e.toString(),
+                      );
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 68, 23, 13),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
                       child: Text(
                         'Register',
                         style: GoogleFonts.comfortaa(

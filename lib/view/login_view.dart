@@ -34,180 +34,192 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       backgroundColor: const Color(0xffAA8E63),
       body: SafeArea(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Login title
-              const SizedBox(height: 25),
-              Text(
-                'Login',
-                style: GoogleFonts.montserrat(
-                  textStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 40,
-                    color: Color.fromARGB(255, 68, 23, 13),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Link icon
+            Image.asset(
+              'lib/icons/link.png',
+              height: 200,
+              width: 200,
+            ),
+            const SizedBox(height: 10),
 
-              // Email textfield
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 241, 233, 221),
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _email,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Email',
-                      ),
+            // Login title
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Login',
+                  style: GoogleFonts.montserrat(
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 24,
+                      color: Color.fromARGB(255, 68, 23, 13),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
+            ),
+            const SizedBox(height: 15),
 
-              // Password textfield
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 241, 233, 221),
-                    border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: TextField(
-                      controller: _password,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Password',
-                      ),
+            // Email textfield
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 241, 233, 221),
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: TextField(
+                    controller: _email,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    keyboardType: TextInputType.emailAddress,
+                    cursorColor: const Color.fromARGB(255, 68, 23, 13),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Email',
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 50),
+            ),
+            const SizedBox(height: 15),
 
-              // Login Button
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            // Password textfield
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 241, 233, 221),
+                  border: Border.all(color: Colors.white),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: TextField(
+                    controller: _password,
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    cursorColor: const Color.fromARGB(255, 68, 23, 13),
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: 'Password',
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 50),
+
+            // Login Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0),
+              child: GestureDetector(
+                onTap: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  try {
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user?.emailVerified ?? false) {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil(mainRoute, (route) => false);
+                    } else {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        verifyEmailRoute,
+                        (route) => false,
+                      );
+                    }
+                  } on FirebaseAuthException catch (e) {
+                    if (e.code == 'user-not-found') {
+                      await showErrorDialog(
+                        context,
+                        'User not found',
+                      );
+                    } else if (e.code == 'wrong-password') {
+                      await showErrorDialog(
+                        context,
+                        'Incorrect password',
+                      );
+                    } else {
+                      await showErrorDialog(
+                        context,
+                        'Error: ${e.code}',
+                      );
+                    }
+                  } catch (e) {
+                    await showErrorDialog(
+                      context,
+                      e.toString(),
+                    );
+                  }
+                },
                 child: Container(
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.all(15.0),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 68, 23, 13),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
-                    child: TextButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        try {
-                          await FirebaseAuth.instance
-                              .signInWithEmailAndPassword(
-                            email: email,
-                            password: password,
-                          );
-                          final user = FirebaseAuth.instance.currentUser;
-                          if (user?.emailVerified ?? false) {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                                mainRoute, (route) => false);
-                          } else {
-                            Navigator.of(context).pushNamedAndRemoveUntil(
-                              verifyEmailRoute,
-                              (route) => false,
-                            );
-                          }
-                        } on FirebaseAuthException catch (e) {
-                          if (e.code == 'user-not-found') {
-                            await showErrorDialog(
-                              context,
-                              'User not found',
-                            );
-                          } else if (e.code == 'wrong-password') {
-                            await showErrorDialog(
-                              context,
-                              'Incorrect password',
-                            );
-                          } else {
-                            await showErrorDialog(
-                              context,
-                              'Error: ${e.code}',
-                            );
-                          }
-                        } catch (e) {
-                          await showErrorDialog(
-                            context,
-                            e.toString(),
-                          );
-                        }
-                      },
-                      child: Text(
-                        'Login',
-                        style: GoogleFonts.comfortaa(
-                          textStyle: const TextStyle(
-                            color: Color.fromARGB(255, 241, 233, 221),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                    child: Text(
+                      'Login',
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          color: Color.fromARGB(255, 241, 233, 221),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
+            ),
+            const SizedBox(height: 15),
 
-              // Transition to RegisterView
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Not a member? ',
+            // Transition to RegisterView
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Not a member? ',
+                  style: GoogleFonts.comfortaa(
+                    textStyle: const TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(255, 241, 233, 221),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        registerRoute, (route) => false);
+                  },
+                  child: Text(
+                    'Register now!',
                     style: GoogleFonts.comfortaa(
                       textStyle: const TextStyle(
                         fontSize: 14,
-                        color: Color.fromARGB(255, 241, 233, 221),
+                        color: Color.fromARGB(255, 68, 23, 13),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          registerRoute, (route) => false);
-                    },
-                    child: Text(
-                      'Register now!',
-                      style: GoogleFonts.comfortaa(
-                        textStyle: const TextStyle(
-                          fontSize: 14,
-                          color: Color.fromARGB(255, 68, 23, 13),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
+                ),
+              ],
+            )
+          ],
         ),
       ),
     );

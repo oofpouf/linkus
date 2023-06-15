@@ -22,22 +22,22 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
             children: [
               const Icon(
                 Icons.email_rounded,
-                size: 90,
+                size: 120,
                 color: Color.fromARGB(255, 68, 23, 13),
               ),
+
               // Verify title
-              const SizedBox(height: 25),
               Text(
                 'Verify your email',
                 style: GoogleFonts.montserrat(
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 40,
+                    fontSize: 32,
                     color: Color.fromARGB(255, 68, 23, 13),
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 38),
 
               // Email verification sent text
               Padding(
@@ -74,18 +74,18 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               // Resend verification button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 68, 23, 13),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Center(
-                    child: TextButton(
-                      onPressed: () async {
-                        final user = FirebaseAuth.instance.currentUser;
-                        await user?.sendEmailVerification();
-                      },
+                child: GestureDetector(
+                  onTap: () async {
+                    final user = FirebaseAuth.instance.currentUser;
+                    await user?.sendEmailVerification();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 68, 23, 13),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Center(
                       child: Text(
                         'Resend email verification',
                         style: GoogleFonts.comfortaa(
