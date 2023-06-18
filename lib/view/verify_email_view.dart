@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
@@ -12,6 +15,35 @@ class VerifyEmailView extends StatefulWidget {
 }
 
 class _VerifyEmailViewState extends State<VerifyEmailView> {
+  // To return to login page once email has been verified
+  bool isVerified = false;
+  Timer? timer;
+  @override
+  void initState() {
+    super.initState();
+    timer =
+        Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
+  }
+
+  checkEmailVerified() async {
+    await AuthService.firebase().currentUser?.reload();
+
+    setState(() {
+      isVerified = AuthService.firebase().currentUser!.isEmailVerified;
+    });
+    if (isVerified) {
+      timer?.cancel();
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

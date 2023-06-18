@@ -1,10 +1,17 @@
-import 'package:firebase_auth/firebase_auth.dart' show User;
-import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-@immutable
+// need to add reload function in auth user
 class AuthUser {
   final bool isEmailVerified;
-  const AuthUser(this.isEmailVerified);
 
-  factory AuthUser.fromFirebase(User user) => AuthUser(user.emailVerified);
+  AuthUser(this.isEmailVerified);
+
+  factory AuthUser.fromFirebase(User user) => AuthUser(
+        user.emailVerified,
+      );
+
+  Future<void> reload() async {
+    User? currentUser = FirebaseAuth.instance.currentUser;
+    await currentUser?.reload();
+  }
 }
