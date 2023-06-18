@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
+
+import '../services/auth/auth_service.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -41,7 +42,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
               // Email verification sent text
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text(
                   "We've sent you an email verification. Please open it to verify your account.",
                   style: GoogleFonts.comfortaa(
@@ -57,7 +58,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
 
               // Resend verification text
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.0),
+                padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: Text(
                   "Haven't received a verification email? Click the button below",
                   style: GoogleFonts.comfortaa(
@@ -76,8 +77,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: GestureDetector(
                   onTap: () async {
-                    final user = FirebaseAuth.instance.currentUser;
-                    await user?.sendEmailVerification();
+                    await AuthService.firebase().sendEmailVerification();
                   },
                   child: Container(
                     padding: const EdgeInsets.all(15.0),
@@ -119,7 +119,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
                   // Return to register button
                   GestureDetector(
                     onTap: () async {
-                      await FirebaseAuth.instance.signOut();
+                      await AuthService.firebase().logOut();
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         registerRoute,
                         (route) => false,
