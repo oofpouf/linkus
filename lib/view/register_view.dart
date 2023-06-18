@@ -127,7 +127,7 @@ class _RegisterViewState extends State<RegisterView> {
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                      AuthService.firebase().createUser(
+                      await AuthService.firebase().createUser(
                         email: email,
                         password: password,
                       );

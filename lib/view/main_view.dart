@@ -66,8 +66,6 @@ class _MainViewState extends State<MainView> {
   }
 }
 
-class AuthSevice {}
-
 Future<bool> showLogOutDialog(BuildContext context) {
   return showDialog<bool>(
     context: context,
