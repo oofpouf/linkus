@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_service.dart';
+import 'package:linkus/view/edit_profile_view.dart';
 import 'package:linkus/view/login_view.dart';
-import 'package:linkus/view/main_view.dart';
+import 'package:linkus/view/home_view.dart';
+import 'package:linkus/view/profile_view.dart';
 import 'package:linkus/view/register_view.dart';
 import 'package:linkus/view/verify_email_view.dart'; // so that you can call devtools.log instead of just log
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,19 +19,21 @@ void main() {
         ),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const Transitions(),
       routes: {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
-        mainRoute: (context) => const MainView(),
+        homeRoute: (context) => const HomeView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
+        profileRoute: (context) => const ProfileView(),
+        editProfileRoute: (context) => const EditProfileView(),
       },
     ),
   );
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class Transitions extends StatelessWidget {
+  const Transitions({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,7 @@ class HomePage extends StatelessWidget {
             final user = AuthService.firebase().currentUser;
             if (user != null) {
               if (user.isEmailVerified) {
-                return const MainView();
+                return const ProfileView();
               } else {
                 return const VerifyEmailView();
               }
@@ -56,4 +59,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-

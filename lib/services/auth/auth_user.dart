@@ -10,6 +10,7 @@ class AuthUser {
         user.emailVerified,
       );
 
+  // adding the reload method
   Future<void> reload() async {
     User? currentUser = FirebaseAuth.instance.currentUser;
     await currentUser?.reload();
