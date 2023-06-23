@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,9 +11,37 @@ import 'crud_exceptions.dart';
 class ProfileService {
   Database? _db;
 
+  List<DatabaseProfile> _profiles = [];
+
+  static final ProfileService _shared = ProfileService._sharedInstance();
+  ProfileService._sharedInstance();
+  factory ProfileService() => _shared;
+
+  final _profilesStreamController =
+      StreamController<List<DatabaseProfile>>.broadcast();
+  Stream<List<DatabaseProfile>> get allProfiles =>
+      _profilesStreamController.stream;
+  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+    try {
+      final user = await getUser(email: email);
+      return user;
+    } on CouldNotFindUser {
+      final createdUser = await createUser(email: email);
+      return createdUser;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _cacheProfiles() async {
+    final allProfiles = await getAllProfiles();
+    _profiles = allProfiles.toList();
+    _profilesStreamController.add(_profiles);
+  }
+
   Future<DatabaseProfile> updateProfile({
     required DatabaseProfile profile,
-    required Image profilePic,
+    required File profilePic,
     required String name,
     required String teleHandle,
     required int year,
@@ -22,10 +53,13 @@ class ProfileService {
     required String hobby2,
     required String hobby3,
   }) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
+    // make sure profile exists
     await getProfile(id: profile.id);
 
+    // update DB
     final updatesCount = await db.update(profileTable, {
       profilePicColumn: profilePic,
       nameColumn: name,
@@ -44,11 +78,16 @@ class ProfileService {
     if (updatesCount == 0) {
       throw CouldNotUpdateProfile();
     } else {
-      return await getProfile(id: profile.id);
+      final updatedProfile = await getProfile(id: profile.id);
+      _profiles.removeWhere((profile) => profile.id == updatedProfile.id);
+      _profiles.add(updatedProfile);
+      _profilesStreamController.add(_profiles);
+      return updatedProfile;
     }
   }
 
   Future<Iterable<DatabaseProfile>> getAllProfiles() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final profiles = await db.query(
       profileTable,
@@ -58,6 +97,7 @@ class ProfileService {
   }
 
   Future<DatabaseProfile> getProfile({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final profiles = await db.query(
       profileTable,
@@ -69,16 +109,25 @@ class ProfileService {
     if (profiles.isEmpty) {
       throw CouldNotFindProfile();
     } else {
-      return DatabaseProfile.fromRow(profiles.first);
+      final profile = DatabaseProfile.fromRow(profiles.first);
+      _profiles.removeWhere((profile) => profile.id == id);
+      _profiles.add(profile);
+      _profilesStreamController.add(_profiles);
+      return profile;
     }
   }
 
   Future<int> deleteAllProfiles() async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
-    return db.delete(profileTable);
+    final numberOfDeletions = await db.delete(profileTable);
+    _profiles = [];
+    _profilesStreamController.add(_profiles);
+    return numberOfDeletions;
   }
 
-  Future<void> deleteNote({required int id}) async {
+  Future<void> deleteProfile({required int id}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       profileTable,
@@ -87,10 +136,14 @@ class ProfileService {
     );
     if (deletedCount != 1) {
       throw CouldNotDeleteProfile();
+    } else {
+      _profiles.removeWhere((profile) => profile.id == id);
+      _profilesStreamController.add(_profiles);
     }
   }
 
   Future<DatabaseProfile> createProfile({required DatabaseUser owner}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     // make sure owner exists in the database with the correct id
@@ -145,10 +198,14 @@ class ProfileService {
       isSynced: true,
     );
 
+    _profiles.add(profile);
+    _profilesStreamController.add(_profiles);
+
     return profile;
   }
 
   Future<DatabaseUser> getUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
 
     final results = await db.query(
@@ -166,6 +223,7 @@ class ProfileService {
   }
 
   Future<DatabaseUser> createUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final results = await db.query(
       userTable,
@@ -188,6 +246,7 @@ class ProfileService {
   }
 
   Future<void> deleteUser({required String email}) async {
+    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final deletedCount = await db.delete(
       userTable,
@@ -218,6 +277,14 @@ class ProfileService {
     }
   }
 
+  Future<void> _ensureDbIsOpen() async {
+    try {
+      await open();
+    } on DatabaseAlreadyOpenException {
+      // empty
+    }
+  }
+
   Future<void> open() async {
     if (_db != null) {
       throw DatabaseAlreadyOpenException();
@@ -233,6 +300,7 @@ class ProfileService {
 
       //create the profile table
       await db.execute(createProfileTable);
+      await _cacheProfiles();
     } on MissingPlatformDirectoryException {
       throw UnableToGetDocumentsDirectory();
     }
@@ -265,7 +333,7 @@ class DatabaseUser {
 class DatabaseProfile {
   final int id;
   final int userId;
-  final Image profilePic;
+  final File profilePic;
   final String name;
   final String teleHandle;
   final int year;
@@ -297,7 +365,7 @@ class DatabaseProfile {
   DatabaseProfile.fromRow(Map<String, Object?> map)
       : id = map[idColumn] as int,
         userId = map[idColumn] as int,
-        profilePic = map[profilePicColumn] as Image,
+        profilePic = map[profilePicColumn] as File,
         name = map[nameColumn] as String,
         teleHandle = map[teleHandleColumn] as String,
         year = map[teleHandleColumn] as int,
@@ -321,7 +389,7 @@ class DatabaseProfile {
   int get hashCode => id.hashCode;
 }
 
-const dbName = "profile.db";
+const dbName = "profileDB.db";
 const profileTable = "profile";
 const userTable = "user";
 const idColumn = "id";

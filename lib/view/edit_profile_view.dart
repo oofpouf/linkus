@@ -230,6 +230,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                             enableSuggestions: false,
                             autocorrect: false,
                             cursorColor: const Color.fromARGB(255, 68, 23, 13),
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Enter your year of study here',
