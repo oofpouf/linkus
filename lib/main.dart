@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_service.dart';
-import 'package:linkus/view/edit_profile_view.dart';
+import 'package:linkus/view/profile/edit_profile_view.dart';
 import 'package:linkus/view/login_view.dart';
-import 'package:linkus/view/home_view.dart';
-import 'package:linkus/view/profile_view.dart';
+import 'package:linkus/view/profile/profile_view.dart';
 import 'package:linkus/view/register_view.dart';
 import 'package:linkus/view/verify_email_view.dart'; // so that you can call devtools.log instead of just log
 
@@ -23,7 +22,6 @@ void main() {
       routes: {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
-        homeRoute: (context) => const HomeView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
         profileRoute: (context) => const ProfileView(),
         editProfileRoute: (context) => const EditProfileView(),
