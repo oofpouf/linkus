@@ -4,25 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileUIFunctions {
-  final File? profilePic;
-  final String name;
-  final String teleHandle;
-
-  ProfileUIFunctions({
-    required this.profilePic,
-    required this.name,
-    required this.teleHandle,
-  });
-
   // pfp
-  Widget generatePfp() {
+  Widget generatePfp(File? profilePic) {
     return SizedBox(
       width: 170,
       height: 170,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
         child: profilePic != null // checking if input is null or not
-            ? Image.file(profilePic!)
+            ? Image.file(profilePic)
             : const CircleAvatar(
                 backgroundColor: Color(0xffE6E6E6),
                 radius: 10,
@@ -33,7 +23,7 @@ class ProfileUIFunctions {
   }
 
   // name
-  Text generateName() {
+  Text generateName(String name) {
     return Text(
       name,
       style: GoogleFonts.comfortaa(
@@ -47,7 +37,7 @@ class ProfileUIFunctions {
   }
 
   // telehandle
-  Text generateTeleHandle() {
+  Text generateTeleHandle(String teleHandle) {
     return Text(
       teleHandle,
       style: GoogleFonts.comfortaa(
@@ -70,6 +60,25 @@ class ProfileUIFunctions {
             color: Color.fromARGB(255, 68, 23, 13),
             fontWeight: FontWeight.w900,
             fontSize: 18,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget generateEditTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          title,
+          style: GoogleFonts.comfortaa(
+            textStyle: const TextStyle(
+              color: Color.fromARGB(255, 68, 23, 13),
+              fontWeight: FontWeight.w900,
+              fontSize: 18,
+            ),
           ),
         ),
       ),

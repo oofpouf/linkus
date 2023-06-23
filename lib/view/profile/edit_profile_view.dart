@@ -1,6 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:linkus/utilities/show_error_dialogue.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+
+import '../../services/auth/auth_service.dart';
+import '../../utilities/profile_ui_functions.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -10,10 +21,19 @@ class EditProfileView extends StatefulWidget {
 }
 
 class _EditProfileViewState extends State<EditProfileView> {
-  List<TextEditingController> listController = [TextEditingController()];
+  final _nameController = TextEditingController();
+  final _teleHandleController = TextEditingController();
+  final _yearController = TextEditingController();
+  final _degreeController = TextEditingController();
+  final _course1Controller = TextEditingController();
+  final _course2Controller = TextEditingController();
+  final _course3Controller = TextEditingController();
+
   String dropdownValue1 = "-- Select a hobby --";
   String dropdownValue2 = "-- Select a hobby --";
   String dropdownValue3 = "-- Select a hobby --";
+
+  File? image;
 
   List<String> listValue = [
     "-- Select a hobby --",
@@ -37,7 +57,128 @@ class _EditProfileViewState extends State<EditProfileView> {
   ];
 
   @override
+  void dispose() {
+    _nameController.dispose();
+    _teleHandleController.dispose();
+    _yearController.dispose();
+    _degreeController.dispose();
+    _course1Controller.dispose();
+    _course2Controller.dispose();
+    _course3Controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> editProfile() async {
+    final usersCollection = FirebaseFirestore.instance.collection("Users");
+    final currentUser = AuthService.firebase().currentUser;
+
+    String newName = _nameController.text.trim();
+    String newTeleHandle = _teleHandleController.text.trim();
+    String newYear = _yearController.text.trim();
+    String newDegree = _degreeController.text.trim();
+    String newCourse1 = _course1Controller.text.trim();
+    String newCourse2 = _course2Controller.text.trim();
+    String newCourse3 = _course3Controller.text.trim();
+    String newHobby1 = dropdownValue1;
+    String newHobby2 = dropdownValue2;
+    String newHobby3 = dropdownValue3;
+
+    if (newName.isNotEmpty) {
+      await usersCollection.doc(currentUser!.email).update({'name': newName});
+    }
+    if (newTeleHandle.isNotEmpty) {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'tele handle': newTeleHandle});
+    }
+    if (newYear.isNotEmpty) {
+      await usersCollection.doc(currentUser!.email).update({'year': newYear});
+    }
+    if (newDegree.isNotEmpty) {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'degree': newDegree});
+    }
+    if (newCourse1.isNotEmpty) {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'course 1': newCourse1});
+    }
+    if (newCourse2.isNotEmpty) {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'course 2': newCourse2});
+    }
+    if (newCourse3.isNotEmpty) {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'course 3': newCourse3});
+    }
+    if (newHobby1 != "-- Select a hobby --") {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'hobby 1': newHobby1});
+    }
+    if (newHobby2 != "-- Select a hobby --") {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'hobby 2': newHobby2});
+    }
+    if (newHobby3 != "-- Select a hobby --") {
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'hobby 3': newHobby3});
+    }
+  }
+
+  Future pickImage() async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      final imagePermanent = await saveImagePermanently(image.path);
+      setState(() => this.image = imagePermanent);
+    } on PlatformException {
+      await showErrorDialog(this.context, 'Failed to select image');
+    }
+  }
+
+  Future<File> saveImagePermanently(String imagePath) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final name = basename(imagePath);
+    final image = File('${directory.path}/$name');
+    return File(imagePath).copy(image.path);
+  }
+
+  Widget generateTextField(String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 241, 233, 221),
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: TextFormField(
+            controller: _yearController,
+            enableSuggestions: false,
+            autocorrect: false,
+            cursorColor: const Color.fromARGB(255, 68, 23, 13),
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "Enter your $hint here",
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    ProfileUIFunctions userProf = ProfileUIFunctions();
     return Scaffold(
       backgroundColor: const Color(0xffAA8E63),
       appBar: AppBar(
@@ -74,17 +215,22 @@ class _EditProfileViewState extends State<EditProfileView> {
               Stack(
                 children: [
                   // Profile picture
-                  SizedBox(
-                    width: 170,
-                    height: 170,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child:
-                            const Image(image: AssetImage('lib/icons/ai.jpg'))),
-                  ),
-                  const SizedBox(height: 15),
 
-                  // Camera icon
+                  image != null // checking if input is null or not
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: SizedBox(
+                              width: 170,
+                              height: 170,
+                              child: Image.file(image!)))
+                      : const CircleAvatar(
+                          backgroundColor: Color(0xffE6E6E6),
+                          radius: 85,
+                          child: Icon(Icons.person,
+                              color: Color(0xffCCCCCC), size: 100),
+                        ),
+
+                  // Gallery icon
                   Positioned(
                     bottom: 0,
                     right: 5,
@@ -95,10 +241,13 @@ class _EditProfileViewState extends State<EditProfileView> {
                         borderRadius: BorderRadius.circular(100),
                         color: const Color.fromARGB(255, 68, 23, 13),
                       ),
-                      child: const Icon(
-                        Icons.camera_alt_rounded,
-                        color: Color.fromARGB(255, 241, 233, 221),
-                        size: 25,
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.photo_album_rounded,
+                          size: 25,
+                        ),
+                        color: const Color.fromARGB(255, 241, 233, 221),
+                        onPressed: () => pickImage(),
                       ),
                     ),
                   )
@@ -109,310 +258,57 @@ class _EditProfileViewState extends State<EditProfileView> {
                 child: Column(
                   children: [
                     // Name title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Name",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf.generateEditTitle('Name'),
                     const SizedBox(height: 10.0),
 
                     // Name textfield
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 233, 221),
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextFormField(
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            cursorColor: const Color.fromARGB(255, 68, 23, 13),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Enter your name here',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    generateTextField('name'),
                     const SizedBox(height: 30),
 
                     // Telegram handle title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Telegram Handle",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf.generateEditTitle('Telegram Handle'),
                     const SizedBox(height: 10.0),
 
                     // Telegram handle textfield
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 233, 221),
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextFormField(
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            cursorColor: const Color.fromARGB(255, 68, 23, 13),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Enter your telegram handle here',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    generateTextField('tele handle'),
                     const SizedBox(height: 30),
 
                     // Year of study title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Year of Study",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf.generateEditTitle('Year of Study (e.g. 1, 2)'),
                     const SizedBox(height: 10.0),
 
                     // Year of study textfield
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 233, 221),
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextFormField(
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            cursorColor: const Color.fromARGB(255, 68, 23, 13),
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Enter your year of study here',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    generateTextField('year of study'),
                     const SizedBox(height: 30),
 
                     // Degree title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Degree",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf
+                        .generateEditTitle('Degree (e.g. Computer Science)'),
                     const SizedBox(height: 10.0),
 
                     // Degree textfield
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 241, 233, 221),
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20.0),
-                          child: TextFormField(
-                            enableSuggestions: false,
-                            autocorrect: false,
-                            cursorColor: const Color.fromARGB(255, 68, 23, 13),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Enter your degree here',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    generateTextField('degree'),
                     const SizedBox(height: 30),
 
                     // Course title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Courses (Add Up to 3)",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf
+                        .generateEditTitle('Courses (Include 3, e.g. CS1010S)'),
+                    const SizedBox(height: 10.0),
 
-                    // Course drop down
-                    ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      shrinkWrap: true,
-                      itemCount:
-                          listController.length < 3 ? listController.length : 3,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(
-                                        255, 241, 233, 221),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.white),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 20.0),
-                                    child: TextFormField(
-                                      controller: listController[index],
-                                      autofocus: false,
-                                      enableSuggestions: false,
-                                      autocorrect: false,
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: "Enter your course code here",
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 0,
-                              ),
-                              index > 0
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          listController[index].clear();
-                                          listController[index].dispose();
-                                          listController.removeAt(index);
-                                        });
-                                      },
-                                      child: const Icon(
-                                        Icons.delete,
-                                        color: Color.fromARGB(255, 68, 23, 13),
-                                        size: 35,
-                                      ),
-                                    )
-                                  : const SizedBox()
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    // Course 1
+                    generateTextField('course code'),
+                    const SizedBox(height: 10.0),
 
-                    // Add more button
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          listController.add(TextEditingController());
-                        });
-                      },
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            border: Border.all(
-                                color:
-                                    const Color.fromARGB(255, 241, 233, 221)),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text("+ Add More",
-                              style: GoogleFonts.comfortaa(
-                                color: const Color.fromARGB(255, 241, 233, 221),
-                                fontWeight: FontWeight.bold,
-                              )),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 20,
-                    ),
+                    // Course 2
+                    generateTextField('course code'),
+                    const SizedBox(height: 10.0),
+
+                    // Course 3
+                    generateTextField('course code'),
                     const SizedBox(height: 30),
 
                     // Hobbies title
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Hobbies (Select Up to 3)",
-                          style: GoogleFonts.comfortaa(
-                            textStyle: const TextStyle(
-                              color: Color.fromARGB(255, 68, 23, 13),
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                    userProf.generateEditTitle('Hobbies (Select up to 3)'),
                     const SizedBox(height: 10.0),
 
                     // Hobbies drop down 1
@@ -528,7 +424,11 @@ class _EditProfileViewState extends State<EditProfileView> {
                       width: 220,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          await editProfile();
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              profileRoute, (route) => false);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               const Color.fromARGB(255, 68, 23, 13),

@@ -43,7 +43,7 @@ class Transitions extends StatelessWidget {
             final user = AuthService.firebase().currentUser;
             if (user != null) {
               if (user.isEmailVerified) {
-                return const ProfileView();
+                return const LoginView();
               } else {
                 return const VerifyEmailView();
               }
