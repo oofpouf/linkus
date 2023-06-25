@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../services/auth/auth_service.dart';
 import '../../utilities/profile_ui_functions.dart';
@@ -21,6 +22,8 @@ class EditProfileView extends StatefulWidget {
 }
 
 class _EditProfileViewState extends State<EditProfileView> {
+  final currentUser = AuthService.firebase().currentUser;
+
   final _nameController = TextEditingController();
   final _teleHandleController = TextEditingController();
   final _yearController = TextEditingController();
@@ -34,6 +37,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   String dropdownValue3 = "-- Select a hobby --";
 
   File? image;
+  UploadTask? uploadTask;
 
   List<String> listValue = [
     "-- Select a hobby --",
@@ -82,6 +86,7 @@ class _EditProfileViewState extends State<EditProfileView> {
     String newHobby1 = dropdownValue1;
     String newHobby2 = dropdownValue2;
     String newHobby3 = dropdownValue3;
+    // include URL string for firebase profile
 
     if (newName.isNotEmpty) {
       await usersCollection.doc(currentUser!.email).update({'name': newName});
@@ -129,6 +134,10 @@ class _EditProfileViewState extends State<EditProfileView> {
           .doc(currentUser!.email)
           .update({'hobby 3': newHobby3});
     }
+
+    // need to check if the profile thing is empty. If not empty can call uploadImage() to upload it onto flutter
+    // uploadImage();
+    //
   }
 
   Future pickImage() async {
@@ -149,7 +158,28 @@ class _EditProfileViewState extends State<EditProfileView> {
     return File(imagePath).copy(image.path);
   }
 
-  Widget generateTextField(String hint) {
+  // Future<String> uploadImage() async {
+  //   final path = 'Images/${currentUser!.email}/${image!}';
+  //   final file = File(image!.path);
+
+  //   final ref = FirebaseStorage.instance.ref().child(path);
+
+  //   setState(() {
+  //     uploadTask = ref.putFile(file);
+  //   });
+
+  //   final snapshot = await uploadTask!.whenComplete(() {});
+
+  //   final urlDownload = await snapshot.ref.getDownloadURL();
+
+  //   setState(() {
+  //     uploadTask = null;
+  //   });
+
+  //   return urlDownload;
+  // }
+
+  Widget generateTextField(String hint, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
@@ -161,7 +191,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: TextFormField(
-            controller: _yearController,
+            controller: controller,
             enableSuggestions: false,
             autocorrect: false,
             cursorColor: const Color.fromARGB(255, 68, 23, 13),
@@ -215,7 +245,6 @@ class _EditProfileViewState extends State<EditProfileView> {
               Stack(
                 children: [
                   // Profile picture
-
                   image != null // checking if input is null or not
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(100),
@@ -262,7 +291,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     const SizedBox(height: 10.0),
 
                     // Name textfield
-                    generateTextField('name'),
+                    generateTextField('name', _nameController),
                     const SizedBox(height: 30),
 
                     // Telegram handle title
@@ -270,7 +299,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     const SizedBox(height: 10.0),
 
                     // Telegram handle textfield
-                    generateTextField('tele handle'),
+                    generateTextField('tele handle', _teleHandleController),
                     const SizedBox(height: 30),
 
                     // Year of study title
@@ -278,7 +307,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     const SizedBox(height: 10.0),
 
                     // Year of study textfield
-                    generateTextField('year of study'),
+                    generateTextField('year of study', _yearController),
                     const SizedBox(height: 30),
 
                     // Degree title
@@ -287,7 +316,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                     const SizedBox(height: 10.0),
 
                     // Degree textfield
-                    generateTextField('degree'),
+                    generateTextField('degree', _degreeController),
                     const SizedBox(height: 30),
 
                     // Course title
@@ -296,15 +325,15 @@ class _EditProfileViewState extends State<EditProfileView> {
                     const SizedBox(height: 10.0),
 
                     // Course 1
-                    generateTextField('course code'),
+                    generateTextField('course code', _course1Controller),
                     const SizedBox(height: 10.0),
 
                     // Course 2
-                    generateTextField('course code'),
+                    generateTextField('course code', _course2Controller),
                     const SizedBox(height: 10.0),
 
                     // Course 3
-                    generateTextField('course code'),
+                    generateTextField('course code', _course3Controller),
                     const SizedBox(height: 30),
 
                     // Hobbies title

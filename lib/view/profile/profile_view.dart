@@ -167,7 +167,7 @@ class _ProfileViewState extends State<ProfileView> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.filter,
+              Icons.filter_alt_rounded,
               color: Color.fromARGB(255, 241, 233, 221),
             ),
             label: 'Filter',
@@ -185,7 +185,7 @@ class _ProfileViewState extends State<ProfileView> {
           ),
         ],
         currentIndex: 2,
-        selectedItemColor: const Color.fromARGB(255, 243, 208, 157),
+        selectedItemColor: const Color.fromARGB(255, 243, 191, 112),
         backgroundColor: const Color.fromARGB(255, 63, 50, 30),
       ),
     );
