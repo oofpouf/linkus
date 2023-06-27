@@ -1,18 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileUIFunctions {
   // pfp
-  Widget generatePfp(File? profilePic) {
+  Widget generatePfp(String profilePic) {
     return SizedBox(
       width: 170,
       height: 170,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
-        child: profilePic != null // checking if input is null or not
-            ? Image.file(profilePic)
+        child: profilePic != "" // checking if input is null or not
+            ? Image.network(profilePic)
             : const CircleAvatar(
                 backgroundColor: Color(0xffE6E6E6),
                 radius: 10,

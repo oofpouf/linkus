@@ -138,6 +138,7 @@ class _RegisterViewState extends State<RegisterView> {
                           .collection("Users")
                           .doc(userCredential.email)
                           .set({
+                            'profile pic': "",
                         'name': "[name]",
                         'tele handle': "[tele handle]",
                         'year': "[year]",

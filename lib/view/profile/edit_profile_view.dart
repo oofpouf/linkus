@@ -135,6 +135,13 @@ class _EditProfileViewState extends State<EditProfileView> {
           .update({'hobby 3': newHobby3});
     }
 
+    if (image != null) {
+      String picUrl = await uploadImage();
+      await usersCollection
+          .doc(currentUser!.email)
+          .update({'profile pic': picUrl});
+    }
+
     // need to check if the profile thing is empty. If not empty can call uploadImage() to upload it onto flutter
     // uploadImage();
     //
@@ -158,26 +165,26 @@ class _EditProfileViewState extends State<EditProfileView> {
     return File(imagePath).copy(image.path);
   }
 
-  // Future<String> uploadImage() async {
-  //   final path = 'Images/${currentUser!.email}/${image!}';
-  //   final file = File(image!.path);
+  Future<String> uploadImage() async {
+    final path = 'Images/${currentUser!.email}/${image!}';
+    final file = File(image!.path);
 
-  //   final ref = FirebaseStorage.instance.ref().child(path);
+    final ref = FirebaseStorage.instance.ref().child(path);
 
-  //   setState(() {
-  //     uploadTask = ref.putFile(file);
-  //   });
+    setState(() {
+      uploadTask = ref.putFile(file);
+    });
 
-  //   final snapshot = await uploadTask!.whenComplete(() {});
+    final snapshot = await uploadTask!.whenComplete(() {});
 
-  //   final urlDownload = await snapshot.ref.getDownloadURL();
+    final urlDownload = await snapshot.ref.getDownloadURL();
 
-  //   setState(() {
-  //     uploadTask = null;
-  //   });
+    setState(() {
+      uploadTask = null;
+    });
 
-  //   return urlDownload;
-  // }
+    return urlDownload;
+  }
 
   Widget generateTextField(String hint, TextEditingController controller) {
     return Padding(

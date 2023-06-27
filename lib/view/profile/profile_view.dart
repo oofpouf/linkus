@@ -68,7 +68,7 @@ class _ProfileViewState extends State<ProfileView> {
                   child: Column(
                     children: [
                       // Profile picture
-                      userProf.generatePfp(null),
+                      userProf.generatePfp(userData['profile pic']),
                       const SizedBox(height: 20),
 
                       // User name
