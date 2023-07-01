@@ -17,24 +17,15 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -52,13 +43,40 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCgjRKOZzDAU8UhKVWqAV6UVKzZGZqAPrA',
+    appId: '1:861987455422:web:8f5fcc6cd97a2bda9eb9ef',
+    messagingSenderId: '861987455422',
+    projectId: 'hihi-7aae0',
+    authDomain: 'hihi-7aae0.firebaseapp.com',
+    storageBucket: 'hihi-7aae0.appspot.com',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAHiQG_n6eSVsbV6fnOhe93a7xQXuKD7XU',
+    appId: '1:861987455422:android:314380ffbe29ec0f9eb9ef',
+    messagingSenderId: '861987455422',
+    projectId: 'hihi-7aae0',
+    storageBucket: 'hihi-7aae0.appspot.com',
+  );
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAOlyZHjHgQU_woUCJbk2LrihFbLiULNLM',
-    appId: '1:380989880093:ios:3a37260fafb4372a3513f4',
-    messagingSenderId: '380989880093',
-    projectId: 'linkus-randc',
-    storageBucket: 'linkus-randc.appspot.com',
-    iosClientId: '380989880093-4sib5nvhqe8j7sfsikrk2crsablro9vv.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBXJHrleUGcTIMdXtiBJlQiEwCbx0x1_Io',
+    appId: '1:861987455422:ios:2c3b60a6bad28b099eb9ef',
+    messagingSenderId: '861987455422',
+    projectId: 'hihi-7aae0',
+    storageBucket: 'hihi-7aae0.appspot.com',
+    iosClientId: '861987455422-kjdbdoj3ai9n95veb3v5gfnknstr8cbb.apps.googleusercontent.com',
     iosBundleId: 'com.linkusrandc.linkus',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBXJHrleUGcTIMdXtiBJlQiEwCbx0x1_Io',
+    appId: '1:861987455422:ios:6b2678faae38304d9eb9ef',
+    messagingSenderId: '861987455422',
+    projectId: 'hihi-7aae0',
+    storageBucket: 'hihi-7aae0.appspot.com',
+    iosClientId: '861987455422-692sskbjil47himlot2au1f4ur5he736.apps.googleusercontent.com',
+    iosBundleId: 'com.linkusrandc.linkus.RunnerTests',
   );
 }
