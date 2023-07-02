@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../view/profile/profile_view.dart';
 import 'actionwidget.dart';
@@ -13,6 +14,7 @@ class CardsStackWidget extends StatefulWidget {
 
 class _CardsStackWidgetState extends State<CardsStackWidget>
     with SingleTickerProviderStateMixin {
+  /*
   List<Profile> draggableItems = [
     const Profile(
         name: 'Rohini',
@@ -35,7 +37,33 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
         distance: '10 miles away',
         imageAsset: 'assets/images/avatar_5.png'),
   ];
+  */
+  List<Profile> draggableItems = [];
 
+  void fetchData() async {
+    QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('Users').get();
+
+    querySnapshot.docs.forEach((doc) {
+      final name = doc['name'];
+      const distance = 'rahrah123';
+      final imageAsset = doc['profile pic'];
+
+      draggableItems.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
+    });
+
+  // Use the `draggableItems` list as needed
+  }
+
+  void populateData() {
+    fetchData();
+  }
+
+
+  
+ 
+ 
+ 
   ValueNotifier<Swipe> swipeNotifier = ValueNotifier(Swipe.none);
   late final AnimationController _animationController;
 
@@ -58,10 +86,11 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
 
   @override
   Widget build(BuildContext context) {
+    populateData();
     return Column(
     children: [
-      ElevatedButton.icon(  
-      onPressed: () {
+      ElevatedButton.icon(
+       onPressed: () {
         Navigator.push(context,
         MaterialPageRoute(builder: (context) => ProfileView()),
         );
