@@ -16,13 +16,35 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     with SingleTickerProviderStateMixin {
   
   List<Profile> draggableItems = [];
+
+  void fetchData() async {
+    QuerySnapshot querySnapshot =
+      await FirebaseFirestore.instance.collection('Users').get();
+
+    querySnapshot.docs.forEach((doc) {
+      final name = doc['name'];
+      const distance = 'rahrah123';
+      final imageAsset = doc['profile pic'];
+
+      draggableItems.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
+    });
+
+  // Use the `draggableItems` list as needed
+  }
+
+  void populateData() {
+    fetchData();
+  }
+
+
+  
   ValueNotifier<Swipe> swipeNotifier = ValueNotifier(Swipe.none);
   late final AnimationController _animationController;
 
+  
   @override
   void initState() {
     super.initState();
-    fetchData();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -35,36 +57,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
         swipeNotifier.value = Swipe.none;
       }
     });
+    populateData();
   }
-
-  void fetchData() async {
-    QuerySnapshot querySnapshot =
-      await FirebaseFirestore.instance.collection('Users').get();
-    
-    List<Profile> fetchedItems = [];
-    
-    querySnapshot.docs.forEach((doc) {
-      final name = doc['name'];
-      const distance = 'rahrah123';
-      final imageAsset = doc['profile pic'];
-
-      fetchedItems.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
-    });
-
-    setState(() {
-      draggableItems = fetchedItems;
-    });
-
-  // Use the `draggableItems` list as needed
-  }
-
-
-  void populateData() {
-    fetchData();
-  }
-
-  
-
 
   @override
   Widget build(BuildContext context) {
