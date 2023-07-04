@@ -5,6 +5,7 @@ import 'package:linkus/constants/routes.dart';
 import 'package:linkus/utilities/profile_ui_functions.dart';
 
 import '../../placeholders/cardstackwidget.dart';
+import '../../placeholders/profile.dart';
 import '../../services/auth/auth_service.dart';
 
 class ProfileView extends StatefulWidget {
@@ -18,6 +19,8 @@ class _ProfileViewState extends State<ProfileView> {
   // current user
   final currentUser = AuthService.firebase().currentUser;
   int _currentIndex = 0;
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -194,23 +197,8 @@ class _ProfileViewState extends State<ProfileView> {
 
           switch (index) {
             case 1:
-            Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => 
-                          const MaterialApp(
-                                      home: Scaffold(
-                                      backgroundColor:Color(0xffAA8E63),
-                                      body: Stack(
-                                      children: [
-                                        CardsStackWidget(),
-                                      ],
-                                      ),
-                                    ),
-                                  )                  
-                                ),
-                              );
-                          break;
+            
+            Navigator.push(context, MaterialPageRoute(builder: (context) => CardsStackWidget()));
           }
         },
         selectedItemColor: const Color.fromARGB(255, 243, 191, 112),

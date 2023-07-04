@@ -166,7 +166,8 @@ class _EditProfileViewState extends State<EditProfileView> {
   }
 
   Future<String> uploadImage() async {
-    final path = 'Images/${currentUser!.email}/${image!}';
+    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final path = 'Images/${currentUser!.email}/$uniqueFileName';
     final file = File(image!.path);
 
     final ref = FirebaseStorage.instance.ref().child(path);
