@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/utilities/profile_ui_functions.dart';
 
-import '../../placeholders/cardstackwidget.dart';
 import '../../services/auth/auth_service.dart';
 
 class ProfileView extends StatefulWidget {
@@ -17,7 +16,6 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   // current user
   final currentUser = AuthService.firebase().currentUser;
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -163,45 +161,6 @@ class _ProfileViewState extends State<ProfileView> {
 
             return const CircularProgressIndicator();
           }),
-
-      // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.filter_alt_rounded,
-            ),
-            label: 'Filter',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.people_alt_rounded,
-            ),
-            label: 'Matches',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          switch (index) {
-            case 1:
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CardsStackWidget()));
-          }
-        },
-        unselectedItemColor: const Color(0xffAA8E63),
-        selectedItemColor: const Color.fromARGB(255, 241, 233, 221),
-        backgroundColor: const Color.fromARGB(255, 68, 23, 13),
-      ),
     );
   }
 

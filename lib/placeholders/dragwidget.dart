@@ -44,14 +44,14 @@ class _DragWidgetState extends State<DragWidget> {
                   children: [
                     ProfileCard(profile: widget.profile),
                     widget.swipeNotifier.value != Swipe.none
-                        ? widget.swipeNotifier.value == Swipe.right 
+                        ? widget.swipeNotifier.value == Swipe.right
                             ? Positioned(
                                 top: 40,
                                 left: 20,
                                 child: Transform.rotate(
                                   angle: 12,
                                   child: TagWidget(
-                                    text: 'LIKE',
+                                    text: "LIKE",
                                     color: Colors.green[400]!,
                                   ),
                                 ),

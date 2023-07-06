@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../constants/routes.dart';
 import 'actionwidget.dart';
 import 'dragwidget.dart';
@@ -60,15 +61,36 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xffAA8E63),
+        backgroundColor: const Color(0xffAA8E63),
         body: Column(children: [
-          const SizedBox(height: 50),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true)
-                  .pushNamedAndRemoveUntil(profileRoute, (route) => false);
-            },
-            child: const Text("Go back to profile page"),
+          const SizedBox(height: 70),
+          SizedBox(
+            width: 220,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true)
+                    .pushNamedAndRemoveUntil(
+                        myNavigationBarRoute, (route) => false);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 241, 233, 221),
+                side: BorderSide.none,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                "Return to profile page",
+                style: GoogleFonts.comfortaa(
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Color.fromARGB(255, 68, 23, 13),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
           ),
           Expanded(
             child: Stack(
@@ -164,7 +186,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                           },
                           icon: const Icon(
                             Icons.favorite,
-                            color: Colors.brown,
+                            color: Color.fromARGB(255, 68, 23, 13),
                           ),
                         ),
                       ],

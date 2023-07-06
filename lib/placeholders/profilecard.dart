@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'profile.dart';
 
 class ProfileCard extends StatelessWidget {
@@ -47,19 +48,22 @@ class ProfileCard extends StatelessWidget {
                   children: [
                     Text(
                       profile.name,
-                      style: const TextStyle(
-                        fontFamily: 'Nunito',
-                        fontWeight: FontWeight.w800,
-                        fontSize: 21,
+                      style: GoogleFonts.montserrat(
+                        textStyle: const TextStyle(
+                          fontSize: 24,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     Text(
                       profile.distance,
-                      style: const TextStyle(
-                        fontFamily: 'Nunito',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 14,
-                        color: Colors.brown,
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.brown,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],

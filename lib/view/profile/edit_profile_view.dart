@@ -225,8 +225,8 @@ class _EditProfileViewState extends State<EditProfileView> {
         // Route to go back to profile
         leading: IconButton(
           onPressed: () async {
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil(profileRoute, (route) => false);
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                myNavigationBarRoute, (route) => false);
           },
           icon: const Icon(
             Icons.arrow_back_ios_new_rounded,
@@ -464,7 +464,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         onPressed: () async {
                           await editProfile();
                           Navigator.of(context).pushNamedAndRemoveUntil(
-                              profileRoute, (route) => false);
+                              myNavigationBarRoute, (route) => false);
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
