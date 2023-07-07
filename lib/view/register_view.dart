@@ -138,17 +138,17 @@ class _RegisterViewState extends State<RegisterView> {
                           .collection("Users")
                           .doc(userCredential.email)
                           .set({
-                            'profile pic': "",
-                        'name': "[name]",
-                        'tele handle': "[tele handle]",
-                        'year': "[year]",
-                        'degree': "[degree]",
-                        'course 1': "[course 1]",
-                        'course 2': "[course 2]",
-                        'course 3': "[course 3]",
-                        'hobby 1': "[hobby 1]",
-                        'hobby 2': "[hobby 2]",
-                        'hobby 3': "[hobby 3]",
+                        'profile pic': "",
+                        'name': "",
+                        'tele handle': "",
+                        'year': "",
+                        'degree': "",
+                        'course 1': "",
+                        'course 2': "",
+                        'course 3': "",
+                        'hobby 1': "",
+                        'hobby 2': "",
+                        'hobby 3': "",
                       });
                       AuthService.firebase().sendEmailVerification();
                       Navigator.of(context).pushNamed(

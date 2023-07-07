@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
@@ -29,6 +30,8 @@ class _LoginViewState extends State<LoginView> {
     _password.dispose();
     super.dispose();
   }
+
+  // Streambuilder to see if user is new
 
   @override
   Widget build(BuildContext context) {
@@ -133,14 +136,29 @@ class _LoginViewState extends State<LoginView> {
                     );
                     final user = AuthService.firebase().currentUser;
                     if (user?.isEmailVerified ?? false) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          myNavigationBarRoute,
-                          (route) => false); // Bring user to profile page
+                      // query for user data
+                      FirebaseFirestore.instance
+                          .collection("Users")
+                          .doc(user?.email)
+                          .get()
+                          .then((DocumentSnapshot<Map<String, dynamic>>
+                              snapshot) {
+                        if (snapshot.exists) {
+                          final userData = snapshot.data()!;
+                          for (String fieldName in userData.keys) {
+                            if (userData[fieldName] == "") {
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  editProfileRoute, (route) => false);
+                              return; // Exit the function after navigating
+                            }
+                          }
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                              myNavigationBarRoute, (route) => false);
+                        }
+                      });
                     } else {
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                        verifyEmailRoute,
-                        (route) => false,
-                      );
+                          verifyEmailRoute, (route) => false);
                     }
                   } on UserNotFoundAuthException {
                     await showErrorDialog(
