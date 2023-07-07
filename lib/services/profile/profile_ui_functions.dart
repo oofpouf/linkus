@@ -10,7 +10,10 @@ class ProfileUIFunctions {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
         child: profilePic != "" // checking if input is null or not
-            ? Image.network(profilePic)
+            ? Image.network(
+                profilePic,
+                fit: BoxFit.cover,
+              )
             : const CircleAvatar(
                 backgroundColor: Color(0xffE6E6E6),
                 radius: 10,
@@ -95,6 +98,59 @@ class ProfileUIFunctions {
             color: Color.fromARGB(255, 241, 233, 221),
             fontWeight: FontWeight.bold,
             fontSize: 15,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget generateTextField(String hint, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 241, 233, 221),
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: TextFormField(
+            controller: controller,
+            enableSuggestions: false,
+            autocorrect: false,
+            cursorColor: const Color.fromARGB(255, 68, 23, 13),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "Enter your $hint here",
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget generateNumField(String hint, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 241, 233, 221),
+          border: Border.all(color: Colors.white),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: TextFormField(
+            controller: controller,
+            enableSuggestions: false,
+            autocorrect: false,
+            cursorColor: const Color.fromARGB(255, 68, 23, 13),
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: "Enter your $hint here",
+            ),
           ),
         ),
       ),
