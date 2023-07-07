@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
-import '../services/auth/auth_service.dart';
-import '../utilities/show_error_dialogue.dart';
+import '../../services/auth/auth_service.dart';
+import '../../utilities/show_error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {

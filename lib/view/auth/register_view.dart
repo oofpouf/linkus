@@ -6,7 +6,7 @@ import 'package:linkus/services/auth/auth_user.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../services/auth/auth_service.dart';
+import '../../services/auth/auth_service.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});

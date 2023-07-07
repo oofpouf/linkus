@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
-import 'package:linkus/utilities/profile_ui_functions.dart';
+import 'package:linkus/services/profile/profile_ui_functions.dart';
 
 import '../../services/auth/auth_service.dart';
+import '../../utilities/show_error_dialogue.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -154,11 +155,8 @@ class _ProfileViewState extends State<ProfileView> {
                 ),
               );
             } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error${snapshot.error}'),
-              );
+              showErrorDialog(this.context, 'Error${snapshot.error}');
             }
-
             return const CircularProgressIndicator();
           }),
     );

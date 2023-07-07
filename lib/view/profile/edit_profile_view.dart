@@ -12,7 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../services/auth/auth_service.dart';
-import '../../utilities/profile_ui_functions.dart';
+import '../../services/profile/profile_ui_functions.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
