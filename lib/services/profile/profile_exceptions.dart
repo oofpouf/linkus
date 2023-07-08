@@ -1,5 +1,7 @@
 // Edit profile exceptions
-class RepeatedValuesException implements Exception {}
+class RepeatedCourseException implements Exception {}
+
+class RepeatedHobbyException implements Exception {}
 
 class EmptyFieldException implements Exception {}
 

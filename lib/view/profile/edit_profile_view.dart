@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:linkus/services/profile/profile_exceptions.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -86,51 +87,31 @@ class _EditProfileViewState extends State<EditProfileView> {
     String newHobby3 = dropdownValue3;
     // include URL string for firebase profile
 
-    if (newName.isNotEmpty) {
-      await usersCollection.doc(currentUser!.email).update({'name': newName});
-    }
-    if (newTeleHandle.isNotEmpty) {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'tele handle': newTeleHandle});
-    }
-    if (newYear.isNotEmpty) {
-      await usersCollection.doc(currentUser!.email).update({'year': newYear});
-    }
-    if (newDegree.isNotEmpty) {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'degree': newDegree});
-    }
-    if (newCourse1.isNotEmpty) {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'course 1': newCourse1});
-    }
-    if (newCourse2.isNotEmpty) {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'course 2': newCourse2});
-    }
-    if (newCourse3.isNotEmpty) {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'course 3': newCourse3});
-    }
-    if (newHobby1 != "-- Select a hobby --") {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'hobby 1': newHobby1});
-    }
-    if (newHobby2 != "-- Select a hobby --") {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'hobby 2': newHobby2});
-    }
-    if (newHobby3 != "-- Select a hobby --") {
-      await usersCollection
-          .doc(currentUser!.email)
-          .update({'hobby 3': newHobby3});
+    if (newName.isEmpty ||
+        newTeleHandle.isEmpty ||
+        newYear.isEmpty ||
+        newDegree.isEmpty ||
+        newCourse1.isEmpty ||
+        newCourse2.isEmpty ||
+        newCourse3.isEmpty ||
+        newHobby1 == "-- Select a hobby --" ||
+        newHobby2 == "-- Select a hobby --" ||
+        newHobby3 == "-- Select a hobby --") {
+      throw EmptyFieldException();
+    } else if (newYear != "1" &&
+        newYear != "2" &&
+        newYear != "3" &&
+        newYear != "4" &&
+        newYear != "5") {
+      throw InvalidYearException();
+    } else if (newCourse1 == newCourse2 ||
+        newCourse2 == newCourse3 ||
+        newCourse3 == newCourse1) {
+      throw RepeatedCourseException();
+    } else if (newHobby1 == newHobby2 ||
+        newHobby2 == newHobby3 ||
+        newHobby3 == newHobby1) {
+      throw RepeatedHobbyException();
     }
 
     if (image != null) {
@@ -139,6 +120,40 @@ class _EditProfileViewState extends State<EditProfileView> {
           .doc(currentUser!.email)
           .update({'profile pic': picUrl});
     }
+
+    await usersCollection.doc(currentUser!.email).update({'name': newName});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'tele handle': newTeleHandle});
+
+    await usersCollection.doc(currentUser!.email).update({'year': newYear});
+
+    await usersCollection.doc(currentUser!.email).update({'degree': newDegree});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'course 1': newCourse1});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'course 2': newCourse2});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'course 3': newCourse3});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'hobby 1': newHobby1});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'hobby 2': newHobby2});
+
+    await usersCollection
+        .doc(currentUser!.email)
+        .update({'hobby 3': newHobby3});
   }
 
   Future pickImage() async {
@@ -459,9 +474,25 @@ class _EditProfileViewState extends State<EditProfileView> {
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  await editProfile();
-                                  Navigator.of(context).pushNamedAndRemoveUntil(
-                                      myNavigationBarRoute, (route) => false);
+                                  try {
+                                    await editProfile();
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil(
+                                            myNavigationBarRoute,
+                                            (route) => false);
+                                  } on EmptyFieldException {
+                                    showErrorDialog(this.context,
+                                        "Please complete all fields");
+                                  } on RepeatedCourseException {
+                                    showErrorDialog(this.context,
+                                        "Please ensure there are no repeated courses");
+                                  } on RepeatedHobbyException {
+                                    showErrorDialog(this.context,
+                                        "Please ensure there are no repeated hobbies");
+                                  } on InvalidYearException {
+                                    showErrorDialog(this.context,
+                                        "Please input a vaid year (1-5)");
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor:
