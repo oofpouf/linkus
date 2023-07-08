@@ -79,9 +79,12 @@ class _EditProfileViewState extends State<EditProfileView> {
     String newTeleHandle = _teleHandleController.text.trim();
     String newYear = _yearController.text.trim();
     String newDegree = _degreeController.text.trim().toLowerCase();
-    String newCourse1 = _course1Controller.text.trim().toLowerCase();
-    String newCourse2 = _course2Controller.text.trim().toLowerCase();
-    String newCourse3 = _course3Controller.text.trim().toLowerCase();
+    String newCourse1 =
+        _course1Controller.text.replaceAll(' ', '').toLowerCase();
+    String newCourse2 =
+        _course2Controller.text.replaceAll(' ', '').toLowerCase();
+    String newCourse3 =
+        _course3Controller.text.replaceAll(' ', '').toLowerCase();
     String newHobby1 = dropdownValue1;
     String newHobby2 = dropdownValue2;
     String newHobby3 = dropdownValue3;
