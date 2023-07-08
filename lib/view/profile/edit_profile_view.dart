@@ -199,6 +199,55 @@ class _EditProfileViewState extends State<EditProfileView> {
     return urlDownload;
   }
 
+  Future<bool> showReturnDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 241, 233, 221),
+          title: const Text(
+            'Return',
+            style: TextStyle(
+              color: Color.fromARGB(255, 63, 50, 30),
+            ),
+          ),
+          content: const Text(
+            'Do you want to return? Your changes will not be saved',
+            style: TextStyle(
+              color: Color.fromARGB(255, 63, 50, 30),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 63, 50, 30),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: const Text(
+                'Return',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 63, 50, 30),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
+  }
+
   @override
   Widget build(BuildContext context) {
     ProfileUIFunctions userProf = ProfileUIFunctions();
@@ -218,8 +267,22 @@ class _EditProfileViewState extends State<EditProfileView> {
                 // Route to go back to profile
                 leading: IconButton(
                   onPressed: () async {
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                        myNavigationBarRoute, (route) => false);
+                    // check if user is new
+                    try {
+                      for (String fieldName in userData.keys) {
+                        if (userData[fieldName] == "") {
+                          throw NoProfileException();
+                        }
+                      }
+                      final shouldReturn = await showReturnDialog(context);
+                      if (shouldReturn) {
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            myNavigationBarRoute, (route) => false);
+                      }
+                    } on NoProfileException {
+                      showErrorDialog(this.context,
+                          "Please create a profile before proceeding");
+                    }
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios_new_rounded,
@@ -253,15 +316,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                                       width: 170,
                                       height: 170,
                                       child: Image.file(image!)))
-                              : userData['profile pic'] != ""
-                                  ? userProf
-                                      .generatePfp(userData['profile pic'])
-                                  : const CircleAvatar(
-                                      backgroundColor: Color(0xffE6E6E6),
-                                      radius: 10,
-                                      child: Icon(Icons.person,
-                                          color: Color(0xffCCCCCC), size: 100),
-                                    ),
+                              : userProf.generatePfp(userData['profile pic']),
                           Positioned(
                             bottom: 0,
                             right: 5,
