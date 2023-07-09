@@ -17,29 +17,38 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     with SingleTickerProviderStateMixin {
   List<Profile> draggableItems = [];
 
-  void fetchData() async {
+  Future<List<Profile>> fetchData() async {
     QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('Users').get();
+      await FirebaseFirestore.instance.collection('Users').get();
+
+    List<Profile> items = [];
 
     querySnapshot.docs.forEach((doc) {
       final name = doc['name'];
       const distance = 'rahrah123';
       final imageAsset = doc['profile pic'];
 
-      draggableItems
-          .add(Profile(name: name, distance: distance, imageAsset: imageAsset));
+      items.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
     });
 
-    // Use the `draggableItems` list as needed
+    return items;
+
+  // Use the `draggableItems` list as needed
   }
 
-  void populateData() {
-    fetchData();
+  void populateData() async {
+    List<Profile> items = await fetchData();
+    setState(() {
+      draggableItems = items;
+    });
   }
 
+
+  
   ValueNotifier<Swipe> swipeNotifier = ValueNotifier(Swipe.none);
   late final AnimationController _animationController;
 
+  
   @override
   void initState() {
     super.initState();
