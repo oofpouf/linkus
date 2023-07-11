@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../constants/routes.dart';
@@ -15,21 +16,57 @@ class CardsStackWidget extends StatefulWidget {
 
 class _CardsStackWidgetState extends State<CardsStackWidget>
     with SingleTickerProviderStateMixin {
+
   List<Profile> draggableItems = [];
 
   Future<List<Profile>> fetchData() async {
+    final currentEmail = FirebaseAuth.instance.currentUser?.email;   
     QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('Users').get();
 
     List<Profile> items = [];
 
-    querySnapshot.docs.forEach((doc) {
-      final name = doc['name'];
-      const distance = 'rahrah123';
-      final imageAsset = doc['profile pic'];
+    DocumentSnapshot? currentUser;
+    
+    for(var doc in querySnapshot.docs) {
+      if (doc.id == currentEmail) {
+        currentUser = doc;
+        break;
+      }
+    }
 
-      items.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
-    });
+    if(currentUser != null) {
+      String criteria = '';
+      final userCourse = currentUser['degree'];
+      final userHobby1 = currentUser['hobby 1'];
+      final userHobby2 = currentUser['hobby 2'];
+      final userHobby3 = currentUser['hobby 3'];
+      querySnapshot.docs.forEach((doc) {
+        final name = doc['name'];
+        final imageAsset = doc['profile pic'];
+        final course = doc['degree'];
+        final hobby1 = doc['hobby 1'];
+        final hobby2 = doc['hobby 2'];
+        final hobby3 = doc['hobby 3'];
+
+        if(userCourse == course) {
+          criteria = userCourse;
+        } else if (userHobby1 == hobby1 || userHobby1 == hobby2 || userHobby1 == hobby3) {
+          criteria = userHobby1;
+        } else if (userHobby2 == hobby1 || userHobby2 == hobby2 || userHobby2 == hobby3) {
+          criteria = userHobby2;
+        } else if (userHobby3 == hobby1 || userHobby3 == hobby2 || userHobby3 == hobby3) {
+          criteria = userHobby3;
+        } else {
+          criteria = '';
+        }
+
+        if (doc.id != currentEmail && criteria != '') {
+          final distance = criteria;
+          items.add(Profile(name: name, distance: distance, imageAsset: imageAsset));
+        }
+      });
+    }
 
     return items;
 
