@@ -1,7 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
+import 'package:linkus/services/profile/firebase_profile_storage.dart';
 import '../../services/auth/auth_service.dart';
 import '../../utilities/show_error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -136,26 +136,20 @@ class _LoginViewState extends State<LoginView> {
                     );
                     final user = AuthService.firebase().currentUser;
                     if (user?.isEmailVerified ?? false) {
-                      // query for user data
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc(user?.email)
-                          .get()
-                          .then((DocumentSnapshot<Map<String, dynamic>>
-                              snapshot) {
-                        if (snapshot.exists) {
-                          final userData = snapshot.data()!;
-                          for (String fieldName in userData.keys) {
-                            if (userData[fieldName] == "") {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  editProfileRoute, (route) => false);
-                              return; // Exit the function after navigating
-                            }
-                          }
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              myNavigationBarRoute, (route) => false);
-                        }
-                      });
+                      FirebaseProfileStorage profiles =
+                          FirebaseProfileStorage();
+                      bool profileExists =
+                          await profiles.profileExists(email: user!.email);
+                      if (profileExists) {
+                        // check if user exists
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            myNavigationBarRoute, (route) => false);
+                      } else {
+                        await profiles.createNewProfile(
+                            email: user.email);
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            editProfileRoute, (route) => false);
+                      }
                     } else {
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           verifyEmailRoute, (route) => false);

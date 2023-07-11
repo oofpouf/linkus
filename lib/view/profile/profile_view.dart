@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
-import 'package:linkus/services/profile/profile_ui_functions.dart';
+import 'package:linkus/services/profile/firebase_profile_storage.dart';
+import 'package:linkus/widgets/profile_functions.dart';
 
 import '../../services/auth/auth_service.dart';
+import '../../services/profile/profile_cloud.dart';
 import '../../utilities/show_error_dialogue.dart';
 
 class ProfileView extends StatefulWidget {
@@ -17,10 +18,10 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   // current user
   final currentUser = AuthService.firebase().currentUser;
+  final profiles = FirebaseProfileStorage();
 
   @override
   Widget build(BuildContext context) {
-    ProfileUIFunctions userProf = ProfileUIFunctions();
     return Scaffold(
       backgroundColor: const Color(0xffAA8E63),
       appBar: AppBar(
@@ -55,28 +56,35 @@ class _ProfileViewState extends State<ProfileView> {
           )
         ],
       ),
-      body: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("Users")
-              .doc(currentUser?.email)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              final userData = snapshot.data!.data() as Map<String, dynamic>;
+      body: FutureBuilder<ProfileCloud>(
+          future: profiles.fetchProfile(email: currentUser!.email),
+          builder:
+              (BuildContext context, AsyncSnapshot<ProfileCloud> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              // If an error occurred during the fetch, display an error message
+              showErrorDialog(this.context, 'Error${snapshot.error}');
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              // Once the profile is fetched, create the ProfileUIFunctions object
+              ProfileCloud profile = snapshot.data!;
+              ProfileFunctions userProf =
+                  ProfileFunctions(profile: profile);
               return SingleChildScrollView(
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
                       // Profile picture
-                      userProf.generatePfp(userData['profile pic']),
+                      userProf.generatePfp(),
                       const SizedBox(height: 20),
 
                       // User name
-                      userProf.generateName(userData['name']),
+                      userProf.generateName(),
 
                       // Tele handle
-                      userProf.generateTeleHandle(userData['tele handle']),
+                      userProf.generateTeleHandle(),
                       const SizedBox(height: 15),
                       const Divider(),
                       const SizedBox(height: 15),
@@ -86,7 +94,7 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(height: 2),
 
                       // YOS description
-                      userProf.generateBodyText(userData['year']),
+                      userProf.generateYear(),
                       const SizedBox(height: 25),
 
                       // Degree
@@ -94,7 +102,7 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(height: 2),
 
                       // Degree description
-                      userProf.generateBodyText(userData['degree']),
+                      userProf.generateDegree(),
                       const SizedBox(height: 25),
 
                       // Courses
@@ -102,11 +110,7 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(height: 2),
 
                       // Courses description
-                      userProf.generateBodyText(userData['course 1'] +
-                          ', ' +
-                          userData['course 2'] +
-                          ', ' +
-                          userData['course 3']),
+                      userProf.generateCourses(),
                       const SizedBox(height: 25),
 
                       // Hobbies
@@ -114,11 +118,7 @@ class _ProfileViewState extends State<ProfileView> {
                       const SizedBox(height: 2),
 
                       // Hobbies description
-                      userProf.generateBodyText(userData['hobby 1'] +
-                          ', ' +
-                          userData['hobby 2'] +
-                          ', ' +
-                          userData['hobby 3']),
+                      userProf.generateHobbies(),
                       const SizedBox(height: 40),
 
                       // Edit profile button
@@ -154,10 +154,7 @@ class _ProfileViewState extends State<ProfileView> {
                   ),
                 ),
               );
-            } else if (snapshot.hasError) {
-              showErrorDialog(this.context, 'Error${snapshot.error}');
             }
-            return const CircularProgressIndicator();
           }),
     );
   }

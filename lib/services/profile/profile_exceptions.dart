@@ -8,3 +8,6 @@ class EmptyFieldException implements Exception {}
 class InvalidYearException implements Exception {}
 
 class NoProfileException implements Exception {}
+
+// Profile storage exceptions 
+class CouldNotUpdateProfileException implements Exception{}

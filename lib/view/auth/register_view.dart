@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
-import 'package:linkus/services/auth/auth_user.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -129,27 +127,10 @@ class _RegisterViewState extends State<RegisterView> {
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                      AuthUser userCredential =
                           await AuthService.firebase().createUser(
                         email: email,
                         password: password,
                       );
-                      FirebaseFirestore.instance
-                          .collection("Users")
-                          .doc(userCredential.email)
-                          .set({
-                        'profile pic': "",
-                        'name': "",
-                        'tele handle': "",
-                        'year': "",
-                        'degree': "",
-                        'course 1': "",
-                        'course 2': "",
-                        'course 3': "",
-                        'hobby 1': "",
-                        'hobby 2': "",
-                        'hobby 3': "",
-                      });
                       AuthService.firebase().sendEmailVerification();
                       Navigator.of(context).pushNamed(
                           verifyEmailRoute); // push named so that entire route is not replaced

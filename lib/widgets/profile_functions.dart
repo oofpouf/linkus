@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkus/services/profile/profile_cloud.dart';
 
-class ProfileUIFunctions {
-  // pfp
-  Widget generatePfp(String profilePic) {
+class ProfileFunctions {
+  final ProfileCloud profile;
+
+  const ProfileFunctions({required this.profile});
+
+  //pfp
+  Widget generatePfp() {
     return SizedBox(
       width: 170,
       height: 170,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(100),
-        child: profilePic != "" // checking if input is null or not
+        child: profile.profilePic != "" // checking if input is null or not
             ? Image.network(
-                profilePic,
+                profile.profilePic,
                 fit: BoxFit.cover,
               )
             : const CircleAvatar(
@@ -24,9 +29,9 @@ class ProfileUIFunctions {
   }
 
   // name
-  Text generateName(String name) {
+  Text generateName() {
     return Text(
-      name,
+      profile.name,
       style: GoogleFonts.comfortaa(
         textStyle: const TextStyle(
           fontSize: 24,
@@ -38,9 +43,9 @@ class ProfileUIFunctions {
   }
 
   // telehandle
-  Text generateTeleHandle(String teleHandle) {
+  Text generateTeleHandle() {
     return Text(
-      teleHandle,
+      profile.teleHandle,
       style: GoogleFonts.comfortaa(
         textStyle: const TextStyle(fontSize: 16),
         color: const Color.fromARGB(255, 241, 233, 221),
@@ -102,6 +107,22 @@ class ProfileUIFunctions {
         ),
       ),
     );
+  }
+
+  Widget generateYear() {
+    return generateBodyText(profile.year);
+  }
+
+  Widget generateDegree() {
+    return generateBodyText(profile.degree);
+  }
+
+  Widget generateCourses() {
+    return generateBodyText('${profile.course1}, ${profile.course2}, ${profile.course3}');
+  }
+
+  Widget generateHobbies() {
+    return generateBodyText('${profile.hobby1}, ${profile.hobby2}, ${profile.hobby3}');
   }
 
   Widget generateTextField(String hint, TextEditingController controller) {
