@@ -69,8 +69,7 @@ class _ProfileViewState extends State<ProfileView> {
             } else {
               // Once the profile is fetched, create the ProfileUIFunctions object
               ProfileCloud profile = snapshot.data!;
-              ProfileFunctions userProf =
-                  ProfileFunctions(profile: profile);
+              ProfileFunctions userProf = ProfileFunctions(profile: profile);
               return SingleChildScrollView(
                 child: Container(
                   padding: const EdgeInsets.all(20),

@@ -26,6 +26,7 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   final currentUser = AuthService.firebase().currentUser;
   final profiles = FirebaseProfileStorage();
+  late Future<ProfileCloud> future;
 
   final _nameController = TextEditingController();
   final _teleHandleController = TextEditingController();
@@ -62,6 +63,12 @@ class _EditProfileViewState extends State<EditProfileView> {
     "traveling",
     "video gaming",
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    future = profiles.fetchProfile(email: currentUser!.email);
+  }
 
   @override
   void dispose() {
@@ -580,7 +587,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         ),
       ),
       body: FutureBuilder<ProfileCloud>(
-          future: profiles.fetchProfile(email: currentUser!.email),
+          future: future,
           builder:
               (BuildContext context, AsyncSnapshot<ProfileCloud> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
