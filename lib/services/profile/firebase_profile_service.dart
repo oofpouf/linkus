@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:linkus/services/profile/profile_cloud.dart';
 import 'package:linkus/services/profile/profile_constants.dart';
 import 'package:linkus/services/profile/profile_exceptions.dart';
+import 'package:linkus/services/profile/profile_service.dart';
 
-class FirebaseProfileStorage {
+class FirebaseProfileService implements ProfileService {
   final profiles = FirebaseFirestore.instance.collection("Users");
 
+  @override
   Future<void> updateProfile({
     required String email,
     String? profilePic,
@@ -41,16 +43,18 @@ class FirebaseProfileStorage {
     }
   }
 
+  @override
   Future<ProfileCloud> fetchProfile({required String email}) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('Users').doc(email).get();
+        await profiles.doc(email).get();
 
     return ProfileCloud.fromSnapshot(snapshot);
   }
 
+  @override
   Future<ProfileCloud> createNewProfile({required String email}) async {
     final DocumentReference<Map<String, dynamic>> document =
-        FirebaseFirestore.instance.collection('Users').doc(email);
+        profiles.doc(email);
 
     await document.set({
       nameCloud: '',
@@ -80,9 +84,10 @@ class FirebaseProfileStorage {
         hobby3: '');
   }
 
+  @override
   Future<bool> profileExists({required String email}) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance.collection('Users').doc(email).get();
+        await profiles.doc(email).get();
     if (snapshot.exists) {
       return true;
     }

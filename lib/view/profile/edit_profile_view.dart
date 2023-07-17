@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:linkus/services/profile/firebase_profile_storage.dart';
+import 'package:linkus/services/profile/firebase_profile_service.dart';
 import 'package:linkus/services/profile/profile_exceptions.dart';
 import 'package:linkus/utilities/show_error_dialogue.dart';
 import 'package:path/path.dart';
@@ -25,7 +25,7 @@ class EditProfileView extends StatefulWidget {
 
 class _EditProfileViewState extends State<EditProfileView> {
   final currentUser = AuthService.firebase().currentUser;
-  final profiles = FirebaseProfileStorage();
+  final profiles = FirebaseProfileService();
   late Future<ProfileCloud> future;
 
   final _nameController = TextEditingController();
@@ -154,40 +154,6 @@ class _EditProfileViewState extends State<EditProfileView> {
           hobby2: newHobby2,
           hobby3: newHobby3);
     }
-
-    // await usersCollection.doc(currentUser!.email).update({'name': newName});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'tele handle': newTeleHandle});
-
-    // await usersCollection.doc(currentUser!.email).update({'year': newYear});
-
-    // await usersCollection.doc(currentUser!.email).update({'degree': newDegree});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'course 1': newCourse1});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'course 2': newCourse2});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'course 3': newCourse3});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'hobby 1': newHobby1});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'hobby 2': newHobby2});
-
-    // await usersCollection
-    //     .doc(currentUser!.email)
-    //     .update({'hobby 3': newHobby3});
   }
 
   Future pickImage() async {

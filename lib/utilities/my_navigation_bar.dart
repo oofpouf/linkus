@@ -22,7 +22,7 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
     setState(() {
       if (index == 1) {
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const CardsStackWidget()));
+            MaterialPageRoute(builder: (context) => _widgetOptions[1]));
       } else {
         _selectedIndex = index;
       }

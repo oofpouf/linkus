@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
-import 'package:linkus/services/profile/firebase_profile_storage.dart';
+import 'package:linkus/services/profile/firebase_profile_service.dart';
 import '../../services/auth/auth_service.dart';
 import '../../utilities/show_error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -136,8 +136,8 @@ class _LoginViewState extends State<LoginView> {
                     );
                     final user = AuthService.firebase().currentUser;
                     if (user?.isEmailVerified ?? false) {
-                      FirebaseProfileStorage profiles =
-                          FirebaseProfileStorage();
+                      FirebaseProfileService profiles =
+                          FirebaseProfileService();
                       bool profileExists =
                           await profiles.profileExists(email: user!.email);
                       if (profileExists) {

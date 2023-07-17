@@ -62,4 +62,22 @@ class ProfileCloud {
         hobby2.isEmpty ||
         hobby3.isEmpty;
   }
+
+  List<Map<String, dynamic>> toListMap() {
+    return [
+      {
+        profilePicCloud: profilePic,
+        nameCloud: name,
+        teleHandleCloud: teleHandle,
+        yearCloud: year,
+        degreeCloud: degree,
+        course1Cloud: course1,
+        course2Cloud: course2,
+        course3Cloud: course3,
+        hobby1Cloud: hobby1,
+        hobby2Cloud: hobby2,
+        hobby3Cloud: hobby3,
+      }
+    ];
+  }
 }

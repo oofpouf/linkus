@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
-import 'package:linkus/services/profile/firebase_profile_storage.dart';
+import 'package:linkus/services/profile/firebase_profile_service.dart';
 import 'package:linkus/widgets/profile_functions.dart';
 
 import '../../services/auth/auth_service.dart';
@@ -18,7 +18,14 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView> {
   // current user
   final currentUser = AuthService.firebase().currentUser;
-  final profiles = FirebaseProfileStorage();
+  final profiles = FirebaseProfileService();
+  late Future<ProfileCloud> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = profiles.fetchProfile(email: currentUser!.email);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +64,7 @@ class _ProfileViewState extends State<ProfileView> {
         ],
       ),
       body: FutureBuilder<ProfileCloud>(
-          future: profiles.fetchProfile(email: currentUser!.email),
+          future: _profileFuture,
           builder:
               (BuildContext context, AsyncSnapshot<ProfileCloud> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

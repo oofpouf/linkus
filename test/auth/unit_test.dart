@@ -7,7 +7,8 @@ void main() {
   group('Mock Authentication', () {
     final provider = MockAuthProvider();
     test('Should not be initialized to begin with', () {
-      expect(provider.isInitialized, false); // when creating MockAuthProvider, should return false
+      expect(provider.isInitialized,
+          false); // when creating MockAuthProvider, should return false
       //Mock authprovider is a mock authentication provider
     });
 
@@ -16,18 +17,18 @@ void main() {
         provider.logOut(),
         throwsA(const TypeMatcher<NotInitializedException>()),
       );
-    }); // should not be able to log out if the provider is not initialized 
+    }); // should not be able to log out if the provider is not initialized
     // expects exception to be thrown because auth provider is not initialized
 
     test('Should be able to be initialized', () async {
       await provider.initialize();
       expect(provider.isInitialized, true);
     });
-    // initializes the provider 
+    // initializes the provider
 
     test('User should be null after initialization', () {
       expect(provider.currentUser, null);
-    }); // not supposed to create user after initialization 
+    }); // not supposed to create user after initialization
 
     test(
       'Should be able to initialize in less than 2 seconds',
@@ -36,7 +37,7 @@ void main() {
         expect(provider.isInitialized, true);
       },
       timeout: const Timeout(Duration(seconds: 2)),
-    ); // ensures that test function returns to timer 
+    ); // ensures that test function returns to timer
 
     test('Create user should delegate to logIn function', () async {
       final badEmailUser = provider.createUser(
@@ -51,14 +52,17 @@ void main() {
         email: 'someone@bar.com',
         password: 'foobar',
       );
-      expect(badPasswordUser,
-          throwsA(const TypeMatcher<WrongPasswordAuthException>())); // bad password throws exception
+      expect(
+          badPasswordUser,
+          throwsA(const TypeMatcher<
+              WrongPasswordAuthException>())); // bad password throws exception
 
       final user = await provider.createUser(
         email: 'foo',
         password: 'bar',
       );
-      expect(provider.currentUser, user); // current user should be set to created user 
+      expect(provider.currentUser,
+          user); // current user should be set to created user
       expect(user.isEmailVerified, false);
     });
     // when user is created, it gets delegatd to the login function
@@ -69,7 +73,7 @@ void main() {
       expect(user, isNotNull);
       expect(user!.isEmailVerified, true);
     });
-    // email verification functionality 
+    // email verification functionality
 
     test('Should be able to log out and log in again', () async {
       await provider.logOut();
