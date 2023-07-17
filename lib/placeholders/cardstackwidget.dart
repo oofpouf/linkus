@@ -17,11 +17,11 @@
 
   class _CardsStackWidgetState extends State<CardsStackWidget>
       with SingleTickerProviderStateMixin {
-    
     final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
     List<Profile> draggableItems = [];
     List<Profile> matchedProfiles = [];
     List<String> emails = [];
+    List<String> matchEmails = [];
 
     Future<List<Profile>> fetchData() async {
       final currentEmail = FirebaseAuth.instance.currentUser?.email;   
@@ -45,6 +45,7 @@
         final userHobby1 = currentUser['hobby 1'];
         final userHobby2 = currentUser['hobby 2'];
         final userHobby3 = currentUser['hobby 3'];
+        
         querySnapshot.docs.forEach((doc) {
           final name = doc['name'];
           final imageAsset = doc['profile pic'];
@@ -65,7 +66,7 @@
             criteria = '';
           }
 
-          if (doc.id != currentEmail && criteria != '') {
+          if (doc.id != currentEmail && criteria != '' && !matchEmails.contains(doc.id)) {
             final distance = criteria;
             items.add(Profile(name: name, distance: distance, imageAsset: imageAsset, email: doc.id));
           }
@@ -107,6 +108,7 @@
       });
       populateData();
       processLikes();
+      processMatches();
     }
 
     void onMatched(Profile profile) {
@@ -116,6 +118,7 @@
       // Perform any other actions you need for a match
     }
 
+    //fetching the users that have liked current user
     Future<List<dynamic>> getLikes() async {
       final usersCollection = FirebaseFirestore.instance.collection('Users');
       final userDoc = usersCollection.doc(currentUserEmail);
@@ -133,11 +136,36 @@
       return [];
     }
 
-
+    //related to likes
     Future<void> processLikes() async {
       List<dynamic> likes = await getLikes();
       emails = List<String>.from(likes);
     }
+
+    //fetching users that have matched with current user.
+    Future<List<dynamic>> getMatches() async {
+      final usersCollection = FirebaseFirestore.instance.collection('Users');
+      final userDoc = usersCollection.doc(currentUserEmail);
+
+      try {
+        final snapshot = await userDoc.get();
+        if (snapshot.exists) {
+          final matches = snapshot.data()?['matches'];
+          return matches != null ? List<dynamic>.from(matches) : [];
+        }
+      } catch (error) {
+        debugPrint('Error retrieving matches: $error');
+      }
+
+      return [];
+    }
+
+  Future<void> processMatches() async {
+    List<dynamic> matches = await getMatches();
+    setState(() {
+      matchEmails = List<String>.from(matches);
+    });
+  }
     
     
     //update firebase upon clicking like button and fetch the likes list from firebase
@@ -164,8 +192,31 @@
     }
 
     bool checkForMatch(List<String> list, Profile profile) {
-      return list.contains(currentUserEmail) && 
+      bool isMatch = list.contains(currentUserEmail) && 
       emails.contains(profile.email);
+
+      if (isMatch) {
+    // Update the 'matches' field for the logged-in user
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUserEmail)
+          .update({
+        'matches': FieldValue.arrayUnion([profile.email])
+      }).catchError((error) {
+        debugPrint('Error updating matches: $error');
+      });
+
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(profile.email)
+          .update({
+        'matches': FieldValue.arrayUnion([currentUserEmail])
+      }).catchError((error) {
+        debugPrint('Error updating matches: $error');
+      });
+    }
+
+      return isMatch;
     }
     
     @override

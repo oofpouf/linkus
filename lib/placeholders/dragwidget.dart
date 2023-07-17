@@ -238,8 +238,29 @@ class _DragWidgetState extends State<DragWidget> {
 
 
   bool checkForMatch(Profile likedProfile) {
-    return likedProfile.likes.contains(currentUserEmail) &&
+    bool isMatch = likedProfile.likes.contains(currentUserEmail) &&
         emails.contains(likedProfile.email);
+    if (isMatch) {
+    // Update the 'matches' field for the logged-in user
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUserEmail)
+          .update({
+        'matches': FieldValue.arrayUnion([likedProfile.email])
+      }).catchError((error) {
+        debugPrint('Error updating matches: $error');
+      });
+
+      FirebaseFirestore.instance
+          .collection('Users')
+          .doc(likedProfile.email)
+          .update({
+        'matches': FieldValue.arrayUnion([currentUserEmail])
+      }).catchError((error) {
+        debugPrint('Error updating matches: $error');
+      });
+    }
+    return isMatch;
         
   }
 
