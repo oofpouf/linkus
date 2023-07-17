@@ -66,6 +66,22 @@ class ProfileCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (profile.isMatched) // Display match indicator
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.green, // Choose the desired match indicator color
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          'Matched',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

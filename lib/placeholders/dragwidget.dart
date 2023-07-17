@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'profile.dart';
@@ -12,19 +14,34 @@ class DragWidget extends StatefulWidget {
     required this.index,
     required this.swipeNotifier,
     this.isLastCard = false,
+    required this.onMatched,
   }) : super(key: key);
+  
   final Profile profile;
   final int index;
   final ValueNotifier<Swipe> swipeNotifier;
   final bool isLastCard;
+  final Function(Profile) onMatched;
 
   @override
   State<DragWidget> createState() => _DragWidgetState();
 }
 
 class _DragWidgetState extends State<DragWidget> {
+  bool isLiked = false;
+  final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
+  List<String> emails = [];
+
+  @override
+  void initState() {
+    super.initState();
+    processLikes();
+  }
+
+  
   @override
   Widget build(BuildContext context) {
+    Profile profile = widget.profile;
     return Center(
       child: Draggable<int>(
         // Data is the value this Draggable stores.
@@ -85,8 +102,45 @@ class _DragWidgetState extends State<DragWidget> {
                   MediaQuery.of(context).size.width / 2) {
             widget.swipeNotifier.value = Swipe.left;
           }
+          
         },
-        onDragEnd: (drag) {
+        onDragEnd: (drag) async {
+          if (widget.swipeNotifier.value == Swipe.right) {
+            // Update liked profile's likes and obtain the updated likes
+            List<String> updatedLikes = await updateLikes();
+            profile.likes = updatedLikes;
+            print(profile.name);
+            print(widget.profile.name); // Update the profile's likes
+
+            // Check for a match using the updated likes
+            if (checkForMatch(profile)) {
+              // Display a notification for the match
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('It\'s a Match!'),
+                    content: Text(
+                      'You and ${profile.name} have liked each other!',
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+              // Add the matched profiles to a list
+              widget.onMatched(widget.profile);
+            }
+            //print(widget.profile.name);
+            debugPrint(profile.likes.toString());
+            debugPrint(emails.toString());
+          }
           widget.swipeNotifier.value = Swipe.none;
         },
 
@@ -133,6 +187,64 @@ class _DragWidgetState extends State<DragWidget> {
       ),
     );
   }
+  Future<List<String>> updateLikes() async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final profileDoc = usersCollection.doc(widget.profile.email);
+
+    try {
+      List<String> temp = []; // Variable to store the updated likes
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(profileDoc);
+
+        if (snapshot.exists) {
+          final likes = List<String>.from(snapshot.data()?['likes'] ?? []);
+          if (!likes.contains(currentUserEmail)) {
+            likes.add(currentUserEmail);
+            transaction.update(profileDoc, {'likes': likes});
+             // Store the updated likes within the transaction
+          }
+          temp = likes;
+        }
+      });
+      return temp; // Return the updated likes after the transaction
+    } catch (error) {
+      debugPrint('Error updating likes: $error');
+    }
+    return []; // Return an empty list if the update fails
+  }
+
+  Future<void> processLikes() async {
+    List<dynamic> likes = await getLikes();
+    emails = List<String>.from(likes);
+  }
+
+  Future<List<dynamic>> getLikes() async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final userDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await userDoc.get();
+      if (snapshot.exists) {
+        final likes = snapshot.data()?['likes'];
+        return likes != null ? List<dynamic>.from(likes) : [];
+      }
+    } catch (error) {
+      debugPrint('Error retrieving likes: $error');
+    }
+
+    return [];
+  }
+
+
+  bool checkForMatch(Profile likedProfile) {
+    return likedProfile.likes.contains(currentUserEmail) &&
+        emails.contains(likedProfile.email);
+        
+  }
+
+
+
 }
 
 class TagWidget extends StatelessWidget {
