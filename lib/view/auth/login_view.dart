@@ -3,7 +3,7 @@ import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
 import 'package:linkus/services/profile/firebase_profile_service.dart';
 import '../../services/auth/auth_service.dart';
-import '../../utilities/show_error_dialogue.dart';
+import '../../utilities/error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginView extends StatefulWidget {
@@ -145,8 +145,7 @@ class _LoginViewState extends State<LoginView> {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             myNavigationBarRoute, (route) => false);
                       } else {
-                        await profiles.createNewProfile(
-                            email: user.email);
+                        await profiles.createNewProfile(email: user.email);
                         Navigator.of(context).pushNamedAndRemoveUntil(
                             editProfileRoute, (route) => false);
                       }
@@ -155,19 +154,25 @@ class _LoginViewState extends State<LoginView> {
                           verifyEmailRoute, (route) => false);
                     }
                   } on UserNotFoundAuthException {
-                    await showErrorDialog(
-                      context,
-                      'User not found',
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const ErrorDialog(text: 'User not found');
+                      },
                     );
                   } on WrongPasswordAuthException {
-                    await showErrorDialog(
-                      context,
-                      'Incorrect password',
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const ErrorDialog(text: 'Incorrect password');
+                      },
                     );
                   } on GenericAuthException {
-                    await showErrorDialog(
-                      context,
-                      'Authentication error',
+                    await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const ErrorDialog(text: 'Authentication error');
+                      },
                     );
                   }
                 },
@@ -232,5 +237,3 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 }
-
-// To display error message to user

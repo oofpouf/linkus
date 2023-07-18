@@ -7,7 +7,7 @@ import 'package:linkus/constants/routes.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkus/services/profile/firebase_profile_service.dart';
 import 'package:linkus/services/profile/profile_exceptions.dart';
-import 'package:linkus/utilities/show_error_dialogue.dart';
+import 'package:linkus/utilities/error_dialogue.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -26,7 +26,7 @@ class EditProfileView extends StatefulWidget {
 class _EditProfileViewState extends State<EditProfileView> {
   final currentUser = AuthService.firebase().currentUser;
   final profiles = FirebaseProfileService();
-  late Future<ProfileCloud> future;
+  late Stream<ProfileCloud> stream;
 
   final _nameController = TextEditingController();
   final _teleHandleController = TextEditingController();
@@ -67,7 +67,7 @@ class _EditProfileViewState extends State<EditProfileView> {
   @override
   void initState() {
     super.initState();
-    future = profiles.fetchProfile(email: currentUser!.email);
+    stream = profiles.fetchProfile(email: currentUser!.email);
   }
 
   @override
@@ -163,7 +163,12 @@ class _EditProfileViewState extends State<EditProfileView> {
       final imagePermanent = await saveImagePermanently(image.path);
       setState(() => this.image = imagePermanent);
     } on PlatformException {
-      await showErrorDialog(this.context, 'Failed to select image');
+      await showDialog(
+        context: this.context,
+        builder: (context) {
+          return const ErrorDialog(text: 'Failed to select image');
+        },
+      );
     }
   }
 
@@ -466,17 +471,41 @@ class _EditProfileViewState extends State<EditProfileView> {
                           Navigator.of(this.context).pushNamedAndRemoveUntil(
                               myNavigationBarRoute, (route) => false);
                         } on EmptyFieldException {
-                          showErrorDialog(
-                              this.context, "Please complete all fields");
+                          showDialog(
+                            context: this.context,
+                            builder: (context) {
+                              return const ErrorDialog(
+                                  text: 'Please complete all fields');
+                            },
+                          );
                         } on RepeatedCourseException {
-                          showErrorDialog(this.context,
-                              "Please ensure there are no repeated courses");
+                          showDialog(
+                            context: this.context,
+                            builder: (context) {
+                              return const ErrorDialog(
+                                  text:
+                                      'Please ensure there are no repeated courses');
+                            },
+                          );
                         } on RepeatedHobbyException {
-                          showErrorDialog(this.context,
-                              "Please ensure there are no repeated hobbies");
+                          showDialog(
+                            context: this.context,
+                            builder: (context) {
+                              return const ErrorDialog(
+                                  text:
+                                      'Please ensure there are no repeated hobbies');
+                            },
+                          );
+                          // showErrorDialog(this.context,
+                          //     "Please ensure there are no repeated hobbies");
                         } on InvalidYearException {
-                          showErrorDialog(
-                              this.context, "Please input a vaid year (1-5)");
+                          showDialog(
+                            context: this.context,
+                            builder: (context) {
+                              return const ErrorDialog(
+                                  text: 'Please input a valid year');
+                            },
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -513,26 +542,32 @@ class _EditProfileViewState extends State<EditProfileView> {
       backgroundColor: const Color(0xffAA8E63),
       appBar: AppBar(
         backgroundColor: const Color(0xffAA8E63),
-
         // Route to go back to profile
         leading: IconButton(
           onPressed: () async {
             // check if user is new
             try {
-              ProfileCloud profile =
-                  await profiles.fetchProfile(email: currentUser!.email);
-              if (profile.hasEmptyFields()) {
-                throw NoProfileException();
+              Stream<ProfileCloud> profile =
+                  profiles.fetchProfile(email: currentUser!.email);
+              await for (var profileCloud in profile) {
+                if (profileCloud.hasEmptyFields()) {
+                  throw NoProfileException();
+                }
+                break;
               }
-
               final shouldReturn = await showReturnDialog(context);
               if (shouldReturn) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     myNavigationBarRoute, (route) => false);
               }
             } on NoProfileException {
-              showErrorDialog(
-                  this.context, "Please create a profile before proceeding");
+              showDialog(
+                context: this.context,
+                builder: (context) {
+                  return const ErrorDialog(
+                      text: 'Please create a profile before proceeding');
+                },
+              );
             }
           },
           icon: const Icon(
@@ -552,14 +587,19 @@ class _EditProfileViewState extends State<EditProfileView> {
           ),
         ),
       ),
-      body: FutureBuilder<ProfileCloud>(
-          future: future,
+      body: StreamBuilder<ProfileCloud>(
+          stream: stream,
           builder:
               (BuildContext context, AsyncSnapshot<ProfileCloud> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              showErrorDialog(this.context, 'Error${snapshot.error}');
+              showDialog(
+                context: this.context,
+                builder: (context) {
+                  return ErrorDialog(text: 'Error: ${snapshot.error}');
+                },
+              );
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               ProfileCloud profile = snapshot.data!;

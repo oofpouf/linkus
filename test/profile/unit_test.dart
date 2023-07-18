@@ -40,8 +40,10 @@ void main() {
     test('createProfile should create profile', () async {
       await mockProfileService.createNewProfile(email: 'test@example.com');
       final List<Map<String, dynamic>> actualNewProfile =
-          (await mockProfileService.fetchProfile(email: 'test@example.com'))
-              .toListMap();
+          await mockProfileService
+              .fetchProfile(email: 'test@example.com')
+              .first
+              .then((profileCloud) => profileCloud.toListMap());
       expect(actualNewProfile, const MapListContains(newProfile));
     });
 
@@ -61,8 +63,10 @@ void main() {
         hobby3: 'Hobby 3',
       );
       final List<Map<String, dynamic>> actualNewProfile =
-          (await mockProfileService.fetchProfile(email: 'test@example.com'))
-              .toListMap();
+          await mockProfileService
+              .fetchProfile(email: 'test@example.com')
+              .first
+              .then((profileCloud) => profileCloud.toListMap());
       expect(actualNewProfile, const MapListContains(testProfile));
     });
 
@@ -88,16 +92,18 @@ void main() {
 
     test('fetchProfile should fetch profile', () async {
       final List<Map<String, dynamic>> actualNewProfile =
-          (await mockProfileService.fetchProfile(email: 'test@example.com'))
-              .toListMap();
+          await mockProfileService
+              .fetchProfile(email: 'test@example.com')
+              .first
+              .then((profileCloud) => profileCloud.toListMap());
       expect(actualNewProfile, const MapListContains(testProfile));
     });
 
     test('profileExists should check if profile exists', () async {
       bool realProfile =
           await mockProfileService.profileExists(email: 'test@example.com');
-      bool fakeProfile = await
-          mockProfileService.profileExists(email: 'wrong@example.com');
+      bool fakeProfile =
+          await mockProfileService.profileExists(email: 'wrong@example.com');
 
       expect(realProfile, true);
       expect(fakeProfile, false);
@@ -146,11 +152,14 @@ class MockProfileService implements ProfileService {
   }
 
   @override
-  Future<ProfileCloud> fetchProfile({required String email}) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await fakeProfiles.doc(email).get();
-
-    return ProfileCloud.fromSnapshot(snapshot);
+  Stream<ProfileCloud> fetchProfile({required String email}) {
+    return fakeProfiles.doc(email).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        return ProfileCloud.fromSnapshot(snapshot);
+      } else {
+        throw Exception('Profile not found');
+      }
+    });
   }
 
   @override

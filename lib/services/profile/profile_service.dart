@@ -15,7 +15,7 @@ abstract class ProfileService {
     required String hobby2,
     required String hobby3,
   });
-  Future<ProfileCloud> fetchProfile({required String email});
+  Stream<ProfileCloud> fetchProfile({required String email});
   Future<ProfileCloud> createNewProfile({required String email});
   Future<bool> profileExists({required String email});
 }

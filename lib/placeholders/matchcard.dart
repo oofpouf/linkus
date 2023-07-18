@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 class MatchCard extends StatelessWidget {
   final String email;
 
-  const MatchCard({required this.email});
+  const MatchCard({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -61,16 +61,16 @@ class MatchCard extends StatelessWidget {
                     Text(
                       name,
                       style: GoogleFonts.comfortaa(
-                      textStyle: const TextStyle(
-                      fontSize: 22,
-                      color: Color.fromARGB(255, 68, 23, 13),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                        textStyle: const TextStyle(
+                          fontSize: 22,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     Text(
                       'Tele ID: $telegramId',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),

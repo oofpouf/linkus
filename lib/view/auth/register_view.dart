@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_exceptions.dart';
-import 'package:linkus/utilities/show_error_dialogue.dart';
+import 'package:linkus/utilities/error_dialogue.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../services/auth/auth_service.dart';
 
 class RegisterView extends StatefulWidget {
-  const RegisterView({super.key});
+  // final AuthService authService;
+
+  const RegisterView({Key? key}) : super(key: key);
 
   @override
   State<RegisterView> createState() => _RegisterViewState();
@@ -79,6 +81,7 @@ class _RegisterViewState extends State<RegisterView> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
+                      key: const Key('email_field'),
                       controller: _email,
                       enableSuggestions: false,
                       autocorrect: false,
@@ -105,6 +108,7 @@ class _RegisterViewState extends State<RegisterView> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 20.0),
                     child: TextField(
+                      key: const Key('password_field'),
                       controller: _password,
                       obscureText: true,
                       enableSuggestions: false,
@@ -123,11 +127,12 @@ class _RegisterViewState extends State<RegisterView> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30.0),
                 child: GestureDetector(
+                  key: const Key('register_button'),
                   onTap: () async {
                     final email = _email.text;
                     final password = _password.text;
                     try {
-                          await AuthService.firebase().createUser(
+                      await AuthService.firebase().createUser(
                         email: email,
                         password: password,
                       );
@@ -135,24 +140,35 @@ class _RegisterViewState extends State<RegisterView> {
                       Navigator.of(context).pushNamed(
                           verifyEmailRoute); // push named so that entire route is not replaced
                     } on WeakPasswordAuthException {
-                      await showErrorDialog(
-                        context,
-                        'Weak password',
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const ErrorDialog(
+                              key: Key('weak_password'), text: 'Weak password');
+                        },
                       );
                     } on EmailAlreadyInUseAuthException {
-                      await showErrorDialog(
-                        context,
-                        'Email is already in use',
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const ErrorDialog(
+                              text: 'Email is already in use');
+                        },
                       );
                     } on InvalidEmailAuthException {
-                      await showErrorDialog(
-                        context,
-                        'Invalid email address',
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const ErrorDialog(
+                              text: 'Invalid email address');
+                        },
                       );
                     } on GenericAuthException {
-                      await showErrorDialog(
-                        context,
-                        'Failed to register',
+                      await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const ErrorDialog(text: 'Failed to register');
+                        },
                       );
                     }
                   },

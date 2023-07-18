@@ -6,7 +6,7 @@ import 'package:linkus/widgets/profile_functions.dart';
 
 import '../../services/auth/auth_service.dart';
 import '../../services/profile/profile_cloud.dart';
-import '../../utilities/show_error_dialogue.dart';
+import '../../utilities/error_dialogue.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -19,13 +19,17 @@ class _ProfileViewState extends State<ProfileView> {
   // current user
   final currentUser = AuthService.firebase().currentUser;
   final profiles = FirebaseProfileService();
-  late Future<ProfileCloud> _profileFuture;
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = profiles.fetchProfile(email: currentUser!.email);
   }
+
+  // Future<void> refreshProfile() async {
+  //   setState(() {
+  //     _profileFuture = profiles.fetchProfile(email: currentUser!.email);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -63,15 +67,20 @@ class _ProfileViewState extends State<ProfileView> {
           )
         ],
       ),
-      body: FutureBuilder<ProfileCloud>(
-          future: _profileFuture,
+      body: StreamBuilder<ProfileCloud>(
+          stream: profiles.fetchProfile(email: currentUser!.email),
           builder:
               (BuildContext context, AsyncSnapshot<ProfileCloud> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               // If an error occurred during the fetch, display an error message
-              showErrorDialog(this.context, 'Error${snapshot.error}');
+              showDialog(
+                context: this.context,
+                builder: (context) {
+                  return ErrorDialog(text: 'Error: ${snapshot.error}');
+                },
+              );
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               // Once the profile is fetched, create the ProfileUIFunctions object
