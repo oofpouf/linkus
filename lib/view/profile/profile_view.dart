@@ -120,14 +120,6 @@ class _ProfileViewState extends State<ProfileView> {
                       userProf.generateDegree(),
                       const SizedBox(height: 25),
 
-                      // Courses
-                      userProf.generateTitle('Courses'),
-                      const SizedBox(height: 2),
-
-                      // Courses description
-                      userProf.generateCourses(),
-                      const SizedBox(height: 25),
-
                       // Hobbies
                       userProf.generateTitle('Hobbies'),
                       const SizedBox(height: 2),

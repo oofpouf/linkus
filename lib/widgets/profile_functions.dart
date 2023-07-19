@@ -117,10 +117,6 @@ class ProfileFunctions {
     return generateBodyText(profile.degree);
   }
 
-  Widget generateCourses() {
-    return generateBodyText('${profile.course1}, ${profile.course2}, ${profile.course3}');
-  }
-
   Widget generateHobbies() {
     return generateBodyText('${profile.hobby1}, ${profile.hobby2}, ${profile.hobby3}');
   }

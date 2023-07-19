@@ -32,9 +32,6 @@ class _EditProfileViewState extends State<EditProfileView> {
   final _teleHandleController = TextEditingController();
   final _yearController = TextEditingController();
   final _degreeController = TextEditingController();
-  final _course1Controller = TextEditingController();
-  final _course2Controller = TextEditingController();
-  final _course3Controller = TextEditingController();
 
   String dropdownValue1 = "-- Select a hobby --";
   String dropdownValue2 = "-- Select a hobby --";
@@ -76,9 +73,6 @@ class _EditProfileViewState extends State<EditProfileView> {
     _teleHandleController.dispose();
     _yearController.dispose();
     _degreeController.dispose();
-    _course1Controller.dispose();
-    _course2Controller.dispose();
-    _course3Controller.dispose();
     super.dispose();
   }
 
@@ -87,12 +81,6 @@ class _EditProfileViewState extends State<EditProfileView> {
     String newTeleHandle = _teleHandleController.text.trim();
     String newYear = _yearController.text.trim();
     String newDegree = _degreeController.text.trim().toLowerCase();
-    String newCourse1 =
-        _course1Controller.text.replaceAll(' ', '').toLowerCase();
-    String newCourse2 =
-        _course2Controller.text.replaceAll(' ', '').toLowerCase();
-    String newCourse3 =
-        _course3Controller.text.replaceAll(' ', '').toLowerCase();
     String newHobby1 = dropdownValue1;
     String newHobby2 = dropdownValue2;
     String newHobby3 = dropdownValue3;
@@ -102,9 +90,6 @@ class _EditProfileViewState extends State<EditProfileView> {
         newTeleHandle.isEmpty ||
         newYear.isEmpty ||
         newDegree.isEmpty ||
-        newCourse1.isEmpty ||
-        newCourse2.isEmpty ||
-        newCourse3.isEmpty ||
         newHobby1 == "-- Select a hobby --" ||
         newHobby2 == "-- Select a hobby --" ||
         newHobby3 == "-- Select a hobby --") {
@@ -115,10 +100,6 @@ class _EditProfileViewState extends State<EditProfileView> {
         newYear != "4" &&
         newYear != "5") {
       throw InvalidYearException();
-    } else if (newCourse1 == newCourse2 ||
-        newCourse2 == newCourse3 ||
-        newCourse3 == newCourse1) {
-      throw RepeatedCourseException();
     } else if (newHobby1 == newHobby2 ||
         newHobby2 == newHobby3 ||
         newHobby3 == newHobby1) {
@@ -134,9 +115,6 @@ class _EditProfileViewState extends State<EditProfileView> {
           teleHandle: newTeleHandle,
           year: newYear,
           degree: newDegree,
-          course1: newCourse1,
-          course2: newCourse2,
-          course3: newCourse3,
           hobby1: newHobby1,
           hobby2: newHobby2,
           hobby3: newHobby3);
@@ -147,9 +125,6 @@ class _EditProfileViewState extends State<EditProfileView> {
           teleHandle: newTeleHandle,
           year: newYear,
           degree: newDegree,
-          course1: newCourse1,
-          course2: newCourse2,
-          course3: newCourse3,
           hobby1: newHobby1,
           hobby2: newHobby2,
           hobby3: newHobby3);
@@ -326,22 +301,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                   userProf.generateTextField('degree', _degreeController),
                   const SizedBox(height: 30),
 
-                  // Course title
-                  userProf.generateEditTitle('Courses (Include 3)'),
-                  const SizedBox(height: 10.0),
-
-                  // Course 1
-                  userProf.generateTextField('course code', _course1Controller),
-                  const SizedBox(height: 10.0),
-
-                  // Course 2
-                  userProf.generateTextField('course code', _course2Controller),
-                  const SizedBox(height: 10.0),
-
-                  // Course 3
-                  userProf.generateTextField('course code', _course3Controller),
-                  const SizedBox(height: 30),
-
                   // Hobbies title
                   userProf.generateEditTitle('Hobbies (Select 3)'),
                   const SizedBox(height: 10.0),
@@ -476,15 +435,6 @@ class _EditProfileViewState extends State<EditProfileView> {
                             builder: (context) {
                               return const ErrorDialog(
                                   text: 'Please complete all fields');
-                            },
-                          );
-                        } on RepeatedCourseException {
-                          showDialog(
-                            context: this.context,
-                            builder: (context) {
-                              return const ErrorDialog(
-                                  text:
-                                      'Please ensure there are no repeated courses');
                             },
                           );
                         } on RepeatedHobbyException {

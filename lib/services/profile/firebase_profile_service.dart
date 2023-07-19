@@ -15,9 +15,6 @@ class FirebaseProfileService implements ProfileService {
     required String teleHandle,
     required String year,
     required String degree,
-    required String course1,
-    required String course2,
-    required String course3,
     required String hobby1,
     required String hobby2,
     required String hobby3,
@@ -31,9 +28,6 @@ class FirebaseProfileService implements ProfileService {
         teleHandleCloud: teleHandle,
         yearCloud: year,
         degreeCloud: degree,
-        course1Cloud: course1,
-        course2Cloud: course2,
-        course3Cloud: course3,
         hobby1Cloud: hobby1,
         hobby2Cloud: hobby2,
         hobby3Cloud: hobby3
@@ -42,14 +36,6 @@ class FirebaseProfileService implements ProfileService {
       throw CouldNotUpdateProfileException();
     }
   }
-
-  // @override
-  // Future<ProfileCloud> fetchProfile({required String email}) async {
-  //   DocumentSnapshot<Map<String, dynamic>> snapshot =
-  //       await profiles.doc(email).get();
-
-  //   return ProfileCloud.fromSnapshot(snapshot);
-  // }
 
   @override 
   Stream<ProfileCloud> fetchProfile({required String email}) {
@@ -72,9 +58,6 @@ class FirebaseProfileService implements ProfileService {
       teleHandleCloud: '',
       yearCloud: '',
       degreeCloud: '',
-      course1Cloud: '',
-      course2Cloud: '',
-      course3Cloud: '',
       hobby1Cloud: '',
       hobby2Cloud: '',
       hobby3Cloud: ''
@@ -87,9 +70,6 @@ class FirebaseProfileService implements ProfileService {
         teleHandle: '',
         year: '',
         degree: '',
-        course1: '',
-        course2: '',
-        course3: '',
         hobby1: '',
         hobby2: '',
         hobby3: '');
