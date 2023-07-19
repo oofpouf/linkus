@@ -25,12 +25,6 @@ class _ProfileViewState extends State<ProfileView> {
     super.initState();
   }
 
-  // Future<void> refreshProfile() async {
-  //   setState(() {
-  //     _profileFuture = profiles.fetchProfile(email: currentUser!.email);
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
