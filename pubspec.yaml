@@ -45,6 +45,7 @@ dependencies:
   path: ^1.8.3
   image_picker: ^0.8.9
   firebase_storage: any
+  mockito: ^5.4.2
   
 
 dev_dependencies:

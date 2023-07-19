@@ -2,12 +2,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:linkus/constants/routes.dart';
+import 'package:linkus/utilities/my_navigation_bar.dart';
+import 'package:linkus/view/auth/login_view.dart';
 import 'package:linkus/view/auth/register_view.dart';
 import 'package:linkus/view/auth/verify_email_view.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  // tests for registering
   group('register view test', () {
     testWidgets('Weak password dialogue appears', (tester) async {
       await Firebase.initializeApp();
@@ -66,11 +70,15 @@ void main() {
       expect(find.byKey(const Key('invalid_email')), findsOneWidget);
     });
 
+    // must remove test email from firebase to test this
     testWidgets('Registering navigates to verify email view', (tester) async {
       await Firebase.initializeApp();
       await tester.pumpWidget(
-        const MaterialApp(
-          home: RegisterView(),
+        MaterialApp(
+          routes: {
+            verifyEmailRoute: (context) => const VerifyEmailView(),
+          },
+          home: const RegisterView(),
         ),
       );
       await tester.pumpAndSettle();
@@ -81,9 +89,74 @@ void main() {
           find.byKey(const Key('password_field')), 'password');
 
       await tester.tap(find.byKey(const Key('register_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 10));
 
       expect(find.byType(VerifyEmailView), findsOneWidget);
+    });
+  });
+
+  // tests for logging in
+  group('login view test', () {
+    testWidgets('User not found dialogue appears', (tester) async {
+      await Firebase.initializeApp();
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: LoginView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'nouser@example.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'password');
+
+      await tester.tap(find.byKey(const Key('login_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('user_not_found')), findsOneWidget);
+    });
+
+    testWidgets('Incorrect password dialogue appears', (tester) async {
+      await Firebase.initializeApp();
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: LoginView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'linkusrandc@gmail.com');
+      await tester.enterText(
+          find.byKey(const Key('password_field')), 'password');
+
+      await tester.tap(find.byKey(const Key('login_button')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('incorrect_password')), findsOneWidget);
+    });
+
+    testWidgets('Logging in navigates to profile view', (tester) async {
+      await Firebase.initializeApp();
+      await tester.pumpWidget(
+        MaterialApp(
+          routes: {
+            myNavigationBarRoute: (context) => const MyNavigationBar(),
+          },
+          home: const LoginView(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'linkusrandc@gmail.com');
+      await tester.enterText(find.byKey(const Key('password_field')), '123456');
+
+      await tester.tap(find.byKey(const Key('login_button')));
+      await tester.pumpAndSettle(const Duration(seconds: 10));
+
+      expect(find.byType(MyNavigationBar), findsOneWidget);
     });
   });
 }

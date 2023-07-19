@@ -151,7 +151,8 @@ class _RegisterViewState extends State<RegisterView> {
                       await showDialog(
                         context: context,
                         builder: (context) {
-                          return const ErrorDialog(key: Key('email_used'),
+                          return const ErrorDialog(
+                              key: Key('email_used'),
                               text: 'Email is already in use');
                         },
                       );
@@ -160,7 +161,7 @@ class _RegisterViewState extends State<RegisterView> {
                         context: context,
                         builder: (context) {
                           return const ErrorDialog(
-                            key: Key('invalid_email'),
+                              key: Key('invalid_email'),
                               text: 'Invalid email address');
                         },
                       );

@@ -61,6 +61,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               // Verify title
               Text(
                 'Verify your email',
+                key: const Key("verify_email_view"),
                 style: GoogleFonts.montserrat(
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,

@@ -80,6 +80,7 @@ class _LoginViewState extends State<LoginView> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: TextField(
+                    key: const Key('email_field'),
                     controller: _email,
                     enableSuggestions: false,
                     autocorrect: false,
@@ -107,6 +108,7 @@ class _LoginViewState extends State<LoginView> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: TextField(
+                    key: const Key('password_field'),
                     controller: _password,
                     obscureText: true,
                     enableSuggestions: false,
@@ -157,14 +159,15 @@ class _LoginViewState extends State<LoginView> {
                     await showDialog(
                       context: context,
                       builder: (context) {
-                        return const ErrorDialog(text: 'User not found');
+                        return const ErrorDialog(text: 'User not found',
+                        key: Key('user_not_found'),);
                       },
                     );
                   } on WrongPasswordAuthException {
                     await showDialog(
                       context: context,
                       builder: (context) {
-                        return const ErrorDialog(text: 'Incorrect password');
+                        return const ErrorDialog(text: 'Incorrect password', key: Key('incorrect_password'));
                       },
                     );
                   } on GenericAuthException {
@@ -185,6 +188,7 @@ class _LoginViewState extends State<LoginView> {
                   child: Center(
                     child: Text(
                       'Login',
+                      key: const Key('login_button'),
                       style: GoogleFonts.comfortaa(
                         textStyle: const TextStyle(
                           color: Color.fromARGB(255, 241, 233, 221),
