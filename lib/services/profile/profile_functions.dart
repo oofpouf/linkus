@@ -18,6 +18,7 @@ class ProfileFunctions {
             ? Image.network(
                 profile.profilePic,
                 fit: BoxFit.cover,
+                key: const Key('profile_pic'),
               )
             : const CircleAvatar(
                 backgroundColor: Color(0xffE6E6E6),
@@ -121,7 +122,7 @@ class ProfileFunctions {
     return generateBodyText('${profile.hobby1}, ${profile.hobby2}, ${profile.hobby3}');
   }
 
-  Widget generateTextField(String hint, TextEditingController controller) {
+  Widget generateTextField(String hint, String key, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       child: Container(
@@ -133,6 +134,7 @@ class ProfileFunctions {
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: TextFormField(
+            key: Key(key),
             controller: controller,
             enableSuggestions: false,
             autocorrect: false,
@@ -159,6 +161,7 @@ class ProfileFunctions {
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0),
           child: TextFormField(
+            key: const Key('year_field'),
             controller: controller,
             enableSuggestions: false,
             autocorrect: false,

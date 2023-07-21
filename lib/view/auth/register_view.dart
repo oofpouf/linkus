@@ -140,38 +140,46 @@ class _RegisterViewState extends State<RegisterView> {
                       Navigator.of(context).pushNamed(
                           verifyEmailRoute); // push named so that entire route is not replaced
                     } on WeakPasswordAuthException {
-                      await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const ErrorDialog(
-                              key: Key('weak_password'), text: 'Weak password');
-                        },
-                      );
+                      // await showDialog(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     return const ErrorDialog(
+                      //         key: Key('weak_password'), text: 'Weak password');
+                      //   },
+                      // );
+                      await showErrorDialog(
+                        context, 'Weak password', 'weak_password');
                     } on EmailAlreadyInUseAuthException {
-                      await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const ErrorDialog(
-                              key: Key('email_used'),
-                              text: 'Email is already in use');
-                        },
-                      );
+                      // await showDialog(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     return const ErrorDialog(
+                      //         key: Key('email_used'),
+                      //         text: 'Email is already in use');
+                      //   },
+                      // );
+                      await showErrorDialog(
+                        context, 'Email is already in use', 'email_used');
                     } on InvalidEmailAuthException {
-                      await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const ErrorDialog(
-                              key: Key('invalid_email'),
-                              text: 'Invalid email address');
-                        },
-                      );
+                      // await showDialog(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     return const ErrorDialog(
+                      //         key: Key('invalid_email'),
+                      //         text: 'Invalid email address');
+                      //   },
+                      // );
+                      await showErrorDialog(
+                        context, 'Invalid email address', 'invalid_email');
                     } on GenericAuthException {
-                      await showDialog(
-                        context: context,
-                        builder: (context) {
-                          return const ErrorDialog(text: 'Failed to register');
-                        },
-                      );
+                      // await showDialog(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     return const ErrorDialog(text: 'Failed to register');
+                      //   },
+                      // );
+                      await showErrorDialog(
+                        context, 'Failed to register', 'registration_fail');
                     }
                   },
                   child: Container(

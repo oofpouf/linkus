@@ -156,27 +156,14 @@ class _LoginViewState extends State<LoginView> {
                           verifyEmailRoute, (route) => false);
                     }
                   } on UserNotFoundAuthException {
-                    await showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const ErrorDialog(text: 'User not found',
-                        key: Key('user_not_found'),);
-                      },
-                    );
+                    await showErrorDialog(
+                        context, 'User not found', 'user_not_found');
                   } on WrongPasswordAuthException {
-                    await showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const ErrorDialog(text: 'Incorrect password', key: Key('incorrect_password'));
-                      },
-                    );
+                    await showErrorDialog(
+                        context, 'Incorrect password', 'incorrect_password');
                   } on GenericAuthException {
-                    await showDialog(
-                      context: context,
-                      builder: (context) {
-                        return const ErrorDialog(text: 'Authentication error');
-                      },
-                    );
+                    await showErrorDialog(
+                        context, 'Authentication error', 'auth_error');
                   }
                 },
                 child: Container(

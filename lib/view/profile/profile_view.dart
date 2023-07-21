@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/profile/firebase_profile_service.dart';
-import 'package:linkus/widgets/profile_functions.dart';
+import 'package:linkus/services/profile/profile_functions.dart';
 
 import '../../services/auth/auth_service.dart';
 import '../../services/profile/profile_cloud.dart';
@@ -68,13 +68,8 @@ class _ProfileViewState extends State<ProfileView> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              // If an error occurred during the fetch, display an error message
-              showDialog(
-                context: this.context,
-                builder: (context) {
-                  return ErrorDialog(text: 'Error: ${snapshot.error}');
-                },
-              );
+              showErrorDialog(
+                        context, 'Error: ${snapshot.error}', 'snapshot_error');
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               // Once the profile is fetched, create the ProfileUIFunctions object
@@ -140,6 +135,7 @@ class _ProfileViewState extends State<ProfileView> {
                           ),
                           child: Text(
                             "Edit Profile",
+                            key: const Key('edit_profile_button'),
                             style: GoogleFonts.comfortaa(
                               textStyle: const TextStyle(
                                 fontSize: 18,
@@ -197,6 +193,7 @@ class _ProfileViewState extends State<ProfileView> {
               },
               child: const Text(
                 'Logout',
+                key: Key('logout_text'),
                 style: TextStyle(
                   color: Color.fromARGB(255, 63, 50, 30),
                   fontWeight: FontWeight.bold,

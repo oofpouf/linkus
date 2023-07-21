@@ -11,10 +11,13 @@ import 'package:linkus/view/auth/verify_email_view.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  setUpAll(() async {
+    await Firebase.initializeApp();
+  });
+
   // tests for registering
   group('register view test', () {
     testWidgets('Weak password dialogue appears', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         const MaterialApp(
           home: RegisterView(),
@@ -27,13 +30,12 @@ void main() {
       await tester.enterText(find.byKey(const Key('password_field')), 'p');
 
       await tester.tap(find.byKey(const Key('register_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       expect(find.byKey(const Key('weak_password')), findsOneWidget);
     });
 
     testWidgets('Email already in use dialogue appears', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         const MaterialApp(
           home: RegisterView(),
@@ -46,13 +48,12 @@ void main() {
       await tester.enterText(find.byKey(const Key('password_field')), '123456');
 
       await tester.tap(find.byKey(const Key('register_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       expect(find.byKey(const Key('email_used')), findsOneWidget);
     });
 
     testWidgets('Invalid email dialogue appears', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         const MaterialApp(
           home: RegisterView(),
@@ -65,14 +66,13 @@ void main() {
           find.byKey(const Key('password_field')), 'password');
 
       await tester.tap(find.byKey(const Key('register_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       expect(find.byKey(const Key('invalid_email')), findsOneWidget);
     });
 
     // must remove test email from firebase to test this
     testWidgets('Registering navigates to verify email view', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         MaterialApp(
           routes: {
@@ -98,7 +98,6 @@ void main() {
   // tests for logging in
   group('login view test', () {
     testWidgets('User not found dialogue appears', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         const MaterialApp(
           home: LoginView(),
@@ -112,13 +111,12 @@ void main() {
           find.byKey(const Key('password_field')), 'password');
 
       await tester.tap(find.byKey(const Key('login_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       expect(find.byKey(const Key('user_not_found')), findsOneWidget);
     });
 
     testWidgets('Incorrect password dialogue appears', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         const MaterialApp(
           home: LoginView(),
@@ -132,13 +130,12 @@ void main() {
           find.byKey(const Key('password_field')), 'password');
 
       await tester.tap(find.byKey(const Key('login_button')));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
 
       expect(find.byKey(const Key('incorrect_password')), findsOneWidget);
     });
 
     testWidgets('Logging in navigates to profile view', (tester) async {
-      await Firebase.initializeApp();
       await tester.pumpWidget(
         MaterialApp(
           routes: {

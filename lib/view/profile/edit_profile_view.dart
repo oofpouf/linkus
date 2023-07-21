@@ -14,7 +14,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../services/auth/auth_service.dart';
 import '../../services/profile/profile_cloud.dart';
-import '../../widgets/profile_functions.dart';
+import '../../services/profile/profile_functions.dart';
 
 class EditProfileView extends StatefulWidget {
   const EditProfileView({super.key});
@@ -138,12 +138,8 @@ class _EditProfileViewState extends State<EditProfileView> {
       final imagePermanent = await saveImagePermanently(image.path);
       setState(() => this.image = imagePermanent);
     } on PlatformException {
-      await showDialog(
-        context: this.context,
-        builder: (context) {
-          return const ErrorDialog(text: 'Failed to select image');
-        },
-      );
+      await showErrorDialog(
+          this.context, 'Failed to select image', 'platform_exception');
     }
   }
 
@@ -212,6 +208,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                 Navigator.of(context).pop(true);
               },
               child: const Text(
+                key: Key('return_text'),
                 'Return',
                 style: TextStyle(
                   color: Color.fromARGB(255, 63, 50, 30),
@@ -273,7 +270,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                   const SizedBox(height: 10.0),
 
                   // Name textfield
-                  userProf.generateTextField('name', _nameController),
+                  userProf.generateTextField(
+                      'name', 'name_field', _nameController),
                   const SizedBox(height: 30),
 
                   // Telegram handle title
@@ -281,8 +279,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                   const SizedBox(height: 10.0),
 
                   // Telegram handle textfield
-                  userProf.generateTextField(
-                      'tele handle', _teleHandleController),
+                  userProf.generateTextField('tele handle', 'tele_handle_field',
+                      _teleHandleController),
                   const SizedBox(height: 30),
 
                   // Year of study title
@@ -298,7 +296,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                   const SizedBox(height: 10.0),
 
                   // Degree textfield
-                  userProf.generateTextField('degree', _degreeController),
+                  userProf.generateTextField(
+                      'degree', 'degree_field', _degreeController),
                   const SizedBox(height: 30),
 
                   // Hobbies title
@@ -318,9 +317,9 @@ class _EditProfileViewState extends State<EditProfileView> {
                       height: 50,
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
+                          key: const Key('hobby1_field'),
                           padding: const EdgeInsets.only(left: 20.0),
                           value: dropdownValue1,
-                          // Step 4.
                           items: listValue
                               .map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -356,9 +355,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            // Step 3.
+                            key: const Key('hobby2_field'),
                             value: dropdownValue2,
-                            // Step 4.
                             items: listValue
                                 .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
@@ -395,7 +393,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         padding: const EdgeInsets.only(left: 20.0),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
-                            // Step 3.
+                            key: const Key('hobby3_field'),
                             value: dropdownValue3,
                             // Step 4.
                             items: listValue
@@ -430,32 +428,16 @@ class _EditProfileViewState extends State<EditProfileView> {
                           Navigator.of(this.context).pushNamedAndRemoveUntil(
                               myNavigationBarRoute, (route) => false);
                         } on EmptyFieldException {
-                          showDialog(
-                            context: this.context,
-                            builder: (context) {
-                              return const ErrorDialog(
-                                  text: 'Please complete all fields');
-                            },
-                          );
+                          await showErrorDialog(this.context,
+                              'Please complete all fields', 'empty_field');
                         } on RepeatedHobbyException {
-                          showDialog(
-                            context: this.context,
-                            builder: (context) {
-                              return const ErrorDialog(
-                                  text:
-                                      'Please ensure there are no repeated hobbies');
-                            },
-                          );
-                          // showErrorDialog(this.context,
-                          //     "Please ensure there are no repeated hobbies");
+                          showErrorDialog(
+                              this.context,
+                              'Please ensure there are no repeated hobbies',
+                              'repeated_hobby');
                         } on InvalidYearException {
-                          showDialog(
-                            context: this.context,
-                            builder: (context) {
-                              return const ErrorDialog(
-                                  text: 'Please input a valid year');
-                            },
-                          );
+                          showErrorDialog(this.context,
+                              'Please input a valid year', 'invalid_year');
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -467,6 +449,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                       ),
                       child: Text(
                         "Update Changes",
+                        key: const Key('update_changes'),
                         style: GoogleFonts.comfortaa(
                           textStyle: const TextStyle(
                             fontSize: 18,
@@ -511,13 +494,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     myNavigationBarRoute, (route) => false);
               }
             } on NoProfileException {
-              showDialog(
-                context: this.context,
-                builder: (context) {
-                  return const ErrorDialog(
-                      text: 'Please create a profile before proceeding');
-                },
-              );
+              await showErrorDialog(context,
+                  'Please create a profile before proceeding', 'no_profile');
             }
           },
           icon: const Icon(
@@ -544,12 +522,8 @@ class _EditProfileViewState extends State<EditProfileView> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              showDialog(
-                context: this.context,
-                builder: (context) {
-                  return ErrorDialog(text: 'Error: ${snapshot.error}');
-                },
-              );
+              showErrorDialog(
+                  context, 'Error: ${snapshot.error}', 'snapshot_error');
               return Center(child: Text('Error: ${snapshot.error}'));
             } else {
               ProfileCloud profile = snapshot.data!;
