@@ -236,7 +236,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
               onPressed: () {
                 Navigator.of(context, rootNavigator: true)
                     .pushNamedAndRemoveUntil(
-                        myNavigationBarRoute, (route) => false);
+                        matchHistoryRoute, (route) => false);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 241, 233, 221),
@@ -246,7 +246,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                 ),
               ),
               child: Text(
-                "Return to profile page",
+                "Return to match history",
                 style: GoogleFonts.comfortaa(
                   textStyle: const TextStyle(
                     fontSize: 14,

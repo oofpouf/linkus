@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:linkus/constants/routes.dart';
 import 'package:linkus/services/auth/auth_service.dart';
 import 'package:linkus/utilities/my_navigation_bar.dart';
-import 'package:linkus/view/match_history_view.dart';
 import 'package:linkus/view/profile/edit_profile_view.dart';
 import 'package:linkus/view/auth/login_view.dart';
-import 'package:linkus/view/profile/profile_view.dart';
 import 'package:linkus/view/auth/register_view.dart';
 import 'package:linkus/view/auth/verify_email_view.dart'; // so that you can call devtools.log instead of just log
 
@@ -25,10 +23,9 @@ void main() {
         loginRoute: (context) => const LoginView(),
         registerRoute: (context) => const RegisterView(),
         verifyEmailRoute: (context) => const VerifyEmailView(),
-        profileRoute: (context) => const ProfileView(),
         editProfileRoute: (context) => const EditProfileView(),
-        matchHistoryRoute: (context) => const MatchHistoryView(),
-        myNavigationBarRoute: (context) => const MyNavigationBar(),
+        matchHistoryRoute: (context) => const MyNavigationBar(index: 0),
+        profileRoute: (context) => const MyNavigationBar(index: 2,),
       },
     ),
   );

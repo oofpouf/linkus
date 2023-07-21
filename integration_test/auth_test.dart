@@ -139,7 +139,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           routes: {
-            myNavigationBarRoute: (context) => const MyNavigationBar(),
+            profileRoute: (context) => const MyNavigationBar(index: 2,),
           },
           home: const LoginView(),
         ),

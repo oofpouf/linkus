@@ -426,7 +426,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         try {
                           await editProfile();
                           Navigator.of(this.context).pushNamedAndRemoveUntil(
-                              myNavigationBarRoute, (route) => false);
+                              profileRoute, (route) => false);
                         } on EmptyFieldException {
                           await showErrorDialog(this.context,
                               'Please complete all fields', 'empty_field');
@@ -490,8 +490,8 @@ class _EditProfileViewState extends State<EditProfileView> {
               }
               final shouldReturn = await showReturnDialog(context);
               if (shouldReturn) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    myNavigationBarRoute, (route) => false);
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(profileRoute, (route) => false);
               }
             } on NoProfileException {
               await showErrorDialog(context,

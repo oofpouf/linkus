@@ -145,7 +145,7 @@ class _LoginViewState extends State<LoginView> {
                       if (profileExists) {
                         // check if user exists
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            myNavigationBarRoute, (route) => false);
+                            profileRoute, (route) => false);
                       } else {
                         await profiles.createNewProfile(email: user.email);
                         Navigator.of(context).pushNamedAndRemoveUntil(
