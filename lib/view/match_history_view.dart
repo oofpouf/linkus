@@ -15,10 +15,19 @@ class _MatchHistoryViewState extends State<MatchHistoryView> {
   final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
   List<String> matchEmails = [];
 
+  bool _isDisposed = false;
+
   @override
   void initState() {
     super.initState();
     processMatches();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed =
+        true; // Set the flag to true to indicate that the widget is disposed.
+    super.dispose();
   }
 
   Future<List<dynamic>> getMatches() async {
@@ -40,9 +49,11 @@ class _MatchHistoryViewState extends State<MatchHistoryView> {
 
   Future<void> processMatches() async {
     List<dynamic> matches = await getMatches();
-    setState(() {
-      matchEmails = List<String>.from(matches);
-    });
+    if (!_isDisposed) {
+      setState(() {
+        matchEmails = List<String>.from(matches);
+      });
+    }
   }
 
   void _handleMatchRemoved() {
@@ -58,23 +69,24 @@ class _MatchHistoryViewState extends State<MatchHistoryView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
+            const SizedBox(height: 30),
+            Text(
               'Link History',
               style: GoogleFonts.montserrat(
-                        textStyle: const TextStyle(
-                          fontSize: 24,
-                          color: Color.fromARGB(255, 68, 23, 13),
-                          fontWeight: FontWeight.bold,
-                        ),
+                textStyle: const TextStyle(
+                  color: Color.fromARGB(255, 68, 23, 13),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
                 ),
-             ),
-            const SizedBox(height: 20),
+              ),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: matchEmails.length,
                 itemBuilder: (context, index) {
-                  return MatchCard(email: matchEmails[index],
-                                   onMatchRemoved: _handleMatchRemoved);
+                  return MatchCard(
+                      email: matchEmails[index],
+                      onMatchRemoved: _handleMatchRemoved);
                 },
               ),
             ),

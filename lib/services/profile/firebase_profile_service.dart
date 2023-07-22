@@ -37,16 +37,16 @@ class FirebaseProfileService implements ProfileService {
     }
   }
 
-  @override 
+  @override
   Stream<ProfileCloud> fetchProfile({required String email}) {
-  return profiles.doc(email).snapshots().map((snapshot) {
-    if (snapshot.exists) {
-      return ProfileCloud.fromSnapshot(snapshot);
-    } else {
-      throw Exception('Profile not found');
-    }
-  });
-}
+    return profiles.doc(email).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        return ProfileCloud.fromSnapshot(snapshot);
+      } else {
+        throw Exception('Profile not found');
+      }
+    });
+  }
 
   @override
   Future<ProfileCloud> createNewProfile({required String email}) async {
@@ -54,6 +54,7 @@ class FirebaseProfileService implements ProfileService {
         profiles.doc(email);
 
     await document.set({
+      profilePicCloud: '',
       nameCloud: '',
       teleHandleCloud: '',
       yearCloud: '',
@@ -84,5 +85,4 @@ class FirebaseProfileService implements ProfileService {
     }
     return false;
   }
-  
 }

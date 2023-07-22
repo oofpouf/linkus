@@ -7,8 +7,7 @@ class MatchCard extends StatelessWidget {
   final String email;
   final VoidCallback onMatchRemoved;
 
-
-   const MatchCard({
+  const MatchCard({
     Key? key,
     required this.email,
     required this.onMatchRemoved,
@@ -45,7 +44,7 @@ class MatchCard extends StatelessWidget {
           child: Container(
             height: 100,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color.fromARGB(255, 241, 233, 221),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Row(
@@ -61,36 +60,33 @@ class MatchCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                Expanded(child:
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      name,
-                      style: GoogleFonts.comfortaa(
-                        textStyle: const TextStyle(
-                          fontSize: 22,
-                          color: Color.fromARGB(255, 68, 23, 13),
-                          fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        name,
+                        style: GoogleFonts.comfortaa(
+                          textStyle: const TextStyle(
+                            fontSize: 22,
+                            color: Color.fromARGB(255, 68, 23, 13),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      'Tele ID: @$telegramId',
-                      style: GoogleFonts.comfortaa(
-                        textStyle: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        )
-                      )
-                    ),
-                  ],
-                ),
+                      Text('Tele ID: @$telegramId',
+                          style: GoogleFonts.comfortaa(
+                              textStyle: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ))),
+                    ],
+                  ),
                 ),
                 IconButton(
                   onPressed: () => _removeMatch(context),
-                  icon: Icon(Icons.clear),
+                  icon: const Icon(Icons.clear),
                 ),
               ],
             ),

@@ -86,13 +86,17 @@ class _EditProfileViewState extends State<EditProfileView> {
     String newHobby3 = dropdownValue3;
     // include URL string for firebase profile
 
+    ProfileCloud profile =
+        await profiles.fetchProfile(email: currentUser!.email).first;
     if (newName.isEmpty ||
         newTeleHandle.isEmpty ||
         newYear.isEmpty ||
         newDegree.isEmpty ||
         newHobby1 == "-- Select a hobby --" ||
         newHobby2 == "-- Select a hobby --" ||
-        newHobby3 == "-- Select a hobby --") {
+        newHobby3 == "-- Select a hobby --" ||
+        image == null && profile.profilePic == '') {
+      // force user to have a profile picture
       throw EmptyFieldException();
     } else if (newYear != "1" &&
         newYear != "2" &&

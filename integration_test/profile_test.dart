@@ -76,7 +76,7 @@ void main() {
   });
 
   group('Edit profile view tests', () {
-    testWidgets('Return to profile page', (tester) async {
+    testWidgets('Returns to profile page', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: const EditProfileView(),
@@ -176,7 +176,7 @@ void main() {
       // fill in text fields
       await tester.enterText(find.byKey(const Key('name_field')), 'r&c');
       await tester.enterText(
-          find.byKey(const Key('tele_handle_field')), '@linkusrandc');
+          find.byKey(const Key('tele_handle_field')), 'linkusrandc');
       await tester.enterText(find.byKey(const Key('year_field')), '2');
       await tester.enterText(
           find.byKey(const Key('degree_field')), 'business analytics');
@@ -209,7 +209,7 @@ void main() {
       final updateChangesButton = find.byKey(const Key('update_changes'));
       await tester.ensureVisible(updateChangesButton);
       await tester.tap(updateChangesButton);
-      await tester.pumpAndSettle(const Duration(seconds: 5));
+      await tester.pumpAndSettle(const Duration(seconds: 10));
 
       expect(find.byType(MyNavigationBar), findsOneWidget);
     });
@@ -226,7 +226,7 @@ void main() {
 
       expect(find.byKey(const Key('profile_pic')), findsOneWidget);
       expect(find.text('r&c'), findsOneWidget);
-      expect(find.text('@linkusrandc'), findsOneWidget);
+      expect(find.text('linkusrandc'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('business analytics'), findsOneWidget);
       expect(find.text('arts and crafts, board/card games, cooking/baking'),

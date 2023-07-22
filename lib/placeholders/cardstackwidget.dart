@@ -44,6 +44,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
       final userHobby1 = currentUser['hobby 1'];
       final userHobby2 = currentUser['hobby 2'];
       final userHobby3 = currentUser['hobby 3'];
+      final year = currentUser['year'];
 
       querySnapshot.docs.forEach((doc) {
         final name = doc['name'];
@@ -76,6 +77,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
             !matchEmails.contains(doc.id)) {
           final distance = criteria;
           items.add(Profile(
+              year: year,
               name: name,
               distance: distance,
               imageAsset: imageAsset,
@@ -117,6 +119,13 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     populateData();
     processLikes();
     processMatches();
+  }
+
+  @override
+  void dispose() {
+    _animationController
+        .dispose(); // Dispose of the AnimationController and its associated Ticker.
+    super.dispose();
   }
 
   void onMatched(Profile profile) {
@@ -233,6 +242,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
             width: 220,
             height: 40,
             child: ElevatedButton(
+              key: const Key('return_button'),
               onPressed: () {
                 Navigator.of(context, rootNavigator: true)
                     .pushNamedAndRemoveUntil(
@@ -246,7 +256,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                 ),
               ),
               child: Text(
-                "Return to match history",
+                "Return to link history",
                 style: GoogleFonts.comfortaa(
                   textStyle: const TextStyle(
                     fontSize: 14,
@@ -356,6 +366,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
+                                    key: Key('link_dialog'),
                                     title: const Text('It\'s a Link!'),
                                     content: Text(
                                       'You and ${swipedProfile.name} have liked each other!',

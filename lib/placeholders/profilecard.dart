@@ -26,10 +26,10 @@ class ProfileCard extends StatelessWidget {
           Positioned(
             bottom: 0,
             child: Container(
-              height: 80,
+              height: 100,
               width: 340,
               decoration: ShapeDecoration(
-                color: Colors.white,
+                color: const Color.fromARGB(255, 241, 233, 221),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -57,6 +57,16 @@ class ProfileCard extends StatelessWidget {
                       ),
                     ),
                     Text(
+                      "year ${profile.year}",
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.brown,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
                       profile.distance,
                       style: GoogleFonts.comfortaa(
                         textStyle: const TextStyle(
@@ -69,9 +79,11 @@ class ProfileCard extends StatelessWidget {
                     if (profile.isMatched) // Display match indicator
                       Container(
                         margin: const EdgeInsets.only(top: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: Colors.green, // Choose the desired match indicator color
+                          color: Colors
+                              .green, // Choose the desired match indicator color
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Text(
