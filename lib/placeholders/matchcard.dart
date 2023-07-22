@@ -1,11 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class MatchCard extends StatelessWidget {
   final String email;
+  final VoidCallback onMatchRemoved;
 
-  const MatchCard({super.key, required this.email});
+
+   const MatchCard({
+    Key? key,
+    required this.email,
+    required this.onMatchRemoved,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +61,7 @@ class MatchCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
+                Expanded(child:
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -69,10 +77,20 @@ class MatchCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Tele ID: $telegramId',
-                      style: const TextStyle(fontSize: 16),
+                      'Tele ID: @$telegramId',
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        )
+                      )
                     ),
                   ],
+                ),
+                ),
+                IconButton(
+                  onPressed: () => _removeMatch(context),
+                  icon: Icon(Icons.clear),
                 ),
               ],
             ),
@@ -80,5 +98,34 @@ class MatchCard extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _removeMatch(BuildContext context) async {
+    final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
+    try {
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(currentUserEmail) // The current user's document
+          .update({
+        'matches': FieldValue.arrayRemove([email]),
+      });
+
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(email) // The current user's document
+          .update({
+        'likes': FieldValue.arrayRemove([currentUserEmail]),
+      });
+
+      onMatchRemoved(); // Notify MatchHistoryView about the match removal
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Match removed successfully')),
+      );
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error removing match')),
+      );
+    }
   }
 }

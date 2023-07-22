@@ -356,7 +356,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: const Text('It\'s a Match!'),
+                                    title: const Text('It\'s a Link!'),
                                     content: Text(
                                       'You and ${swipedProfile.name} have liked each other!',
                                     ),

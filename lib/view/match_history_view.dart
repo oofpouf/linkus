@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import '../placeholders/matchcard.dart';
 
 class MatchHistoryView extends StatefulWidget {
@@ -45,6 +45,10 @@ class _MatchHistoryViewState extends State<MatchHistoryView> {
     });
   }
 
+  void _handleMatchRemoved() {
+    processMatches(); // Refresh the matchEmails list after a match is removed
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,20 +58,23 @@ class _MatchHistoryViewState extends State<MatchHistoryView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Match History',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+             Text(
+              'Link History',
+              style: GoogleFonts.montserrat(
+                        textStyle: const TextStyle(
+                          fontSize: 24,
+                          color: Color.fromARGB(255, 68, 23, 13),
+                          fontWeight: FontWeight.bold,
+                        ),
+                ),
+             ),
             const SizedBox(height: 20),
             Expanded(
               child: ListView.builder(
                 itemCount: matchEmails.length,
                 itemBuilder: (context, index) {
-                  return MatchCard(email: matchEmails[index]);
+                  return MatchCard(email: matchEmails[index],
+                                   onMatchRemoved: _handleMatchRemoved);
                 },
               ),
             ),

@@ -119,7 +119,7 @@ class _DragWidgetState extends State<DragWidget> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('It\'s a Match!'),
+                    title: const Text('It\'s a Link!'),
                     content: Text(
                       'You and ${profile.name} have liked each other!',
                     ),
