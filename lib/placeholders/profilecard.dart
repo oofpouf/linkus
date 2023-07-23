@@ -76,7 +76,7 @@ class ProfileCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (profile.isMatched) // Display match indicator
+                    if (profile.isLiked) // Display match indicator
                       Container(
                         margin: const EdgeInsets.only(top: 8),
                         padding: const EdgeInsets.symmetric(

@@ -21,6 +21,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
   List<Profile> matchedProfiles = [];
   List<String> emails = [];
   List<String> matchEmails = [];
+  List<String> likedProfiles = [];
+  bool profilesAvailable = true;
 
   Future<List<Profile>> fetchData() async {
     final currentEmail = FirebaseAuth.instance.currentUser?.email;
@@ -74,7 +76,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
 
         if (doc.id != currentEmail &&
             criteria != '' &&
-            !matchEmails.contains(doc.id)) {
+            !matchEmails.contains(doc.id) &&
+            !likedProfiles.contains(doc.id)) {
           final distance = criteria;
           items.add(Profile(
               year: year,
@@ -95,6 +98,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     List<Profile> items = await fetchData();
     setState(() {
       draggableItems = items;
+      profilesAvailable = draggableItems.isNotEmpty;
     });
   }
 
@@ -119,6 +123,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     populateData();
     processLikes();
     processMatches();
+    filterLikes();
   }
 
   @override
@@ -133,6 +138,48 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
       matchedProfiles.add(profile);
     });
     // Perform any other actions you need for a match
+  }
+
+  //updating firebase of loggedin user by adding the profiles that logged in user has liked for filtering.
+  Future<void> updateLikes(Profile profile) async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final profileDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await profileDoc.get();
+
+      if (snapshot.exists) {
+        final likes = List<String>.from(snapshot.data()?['liked profiles'] ?? []);
+        if (!likes.contains(profile.email)) {
+          likes.add(profile.email);
+          await profileDoc.update({'liked profiles': likes});
+        }
+      }
+    } catch (error) {
+      debugPrint('Error updating likes: $error');
+    }
+  }
+
+  Future<void> filterLikes() async {
+    List<dynamic> likes = await getLikedProfiles();
+    likedProfiles = List<String>.from(likes);
+  }
+
+  Future<List<dynamic>> getLikedProfiles() async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final userDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await userDoc.get();
+      if (snapshot.exists) {
+        final likes = snapshot.data()?['liked profiles'];
+        return likes != null ? List<dynamic>.from(likes) : [];
+      }
+    } catch (error) {
+      debugPrint('Error retrieving likes: $error');
+    }
+
+    return [];
   }
 
   //fetching the users that have liked current user
@@ -152,6 +199,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
 
     return [];
   }
+  
 
   //related to likes
   Future<void> processLikes() async {
@@ -359,8 +407,10 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                             swipeNotifier.value = Swipe.right;
                             _animationController.forward();
                             Profile swipedProfile = draggableItems.last;
+
                             List<String> updatedLikes =
                                 await addToLikes(swipedProfile);
+                            await updateLikes(swipedProfile);
                             if (checkForMatch(updatedLikes, swipedProfile)) {
                               showDialog(
                                 context: context,
@@ -439,6 +489,19 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                     },
                   ),
                 ),
+                if (!profilesAvailable)
+                  Center(
+                    child: Text(
+                      "There are no available profiles to swipe",
+                      style: GoogleFonts.comfortaa(
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           )

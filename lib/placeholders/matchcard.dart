@@ -100,6 +100,13 @@ class MatchCard extends StatelessWidget {
     final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
     try {
       await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(currentUserEmail)
+        .update({
+      'removes': FieldValue.arrayUnion([email]),
+    });
+    
+      await FirebaseFirestore.instance
           .collection('Users')
           .doc(currentUserEmail) // The current user's document
           .update({

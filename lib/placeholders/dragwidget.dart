@@ -31,6 +31,7 @@ class _DragWidgetState extends State<DragWidget> {
   bool isLiked = false;
   final currentUserEmail = FirebaseAuth.instance.currentUser!.email!;
   List<String> emails = [];
+  double totalDragDistance = 0;
 
   @override
   void initState() {
@@ -96,21 +97,23 @@ class _DragWidgetState extends State<DragWidget> {
               dragUpdateDetails.globalPosition.dx >
                   MediaQuery.of(context).size.width / 2) {
             widget.swipeNotifier.value = Swipe.right;
+            totalDragDistance += dragUpdateDetails.delta.dx;
           }
           if (dragUpdateDetails.delta.dx < 0 &&
               dragUpdateDetails.globalPosition.dx <
                   MediaQuery.of(context).size.width / 2) {
             widget.swipeNotifier.value = Swipe.left;
+            totalDragDistance = 0;
           }
           
         },
         onDragEnd: (drag) async {
-          if (widget.swipeNotifier.value == Swipe.right) {
+          if (widget.swipeNotifier.value == Swipe.right &&
+              totalDragDistance > MediaQuery.of(context).size.width * 0.22) {
             // Update liked profile's likes and obtain the updated likes
             List<String> updatedLikes = await updateLikes();
             profile.likes = updatedLikes;
-            print(profile.name);
-            print(widget.profile.name); // Update the profile's likes
+            await updateLikedProfiles(profile);
 
             // Check for a match using the updated likes
             if (checkForMatch(profile)) {
@@ -136,12 +139,12 @@ class _DragWidgetState extends State<DragWidget> {
               );
               // Add the matched profiles to a list
               widget.onMatched(widget.profile);
+              debugPrint(emails.toString());
+              debugPrint(updatedLikes.toString());
             }
-            //print(widget.profile.name);
-            debugPrint(profile.likes.toString());
-            debugPrint(emails.toString());
           }
           widget.swipeNotifier.value = Swipe.none;
+          totalDragDistance = 0;
         },
 
         childWhenDragging: Container(
@@ -212,6 +215,27 @@ class _DragWidgetState extends State<DragWidget> {
       debugPrint('Error updating likes: $error');
     }
     return []; // Return an empty list if the update fails
+  }
+
+
+  //updating firebase of loggedin user by adding the profiles that logged in user has liked for filtering.
+  Future<void> updateLikedProfiles(Profile profile) async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final profileDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await profileDoc.get();
+
+      if (snapshot.exists) {
+        final likes = List<String>.from(snapshot.data()?['liked profiles'] ?? []);
+        if (!likes.contains(profile.email)) {
+          likes.add(profile.email);
+          await profileDoc.update({'liked profiles': likes});
+        }
+      }
+    } catch (error) {
+      debugPrint('Error updating likes: $error');
+    }
   }
 
   Future<void> processLikes() async {
