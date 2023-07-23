@@ -65,10 +65,6 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // bunny removed from card stack
-        await tester.tap(find.byIcon(Icons.close));
-        await tester.pumpAndSettle(const Duration(seconds: 3));
-
         // click like on puppy
         await tester.tap(find.byIcon(Icons.favorite));
         await tester.pumpAndSettle(const Duration(seconds: 3));

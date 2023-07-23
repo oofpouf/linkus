@@ -97,7 +97,7 @@ void main() {
       expect(find.byType(MyNavigationBar), findsOneWidget);
     });
 
-    testWidgets('Empty field dialog appears', (tester) async {
+    testWidgets('Empty field dialogue appears', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: EditProfileView(),
@@ -113,7 +113,7 @@ void main() {
       expect(find.byKey(const Key('empty_field')), findsOneWidget);
     });
 
-    testWidgets('Invalid year dialog appears', (tester) async {
+    testWidgets('Invalid year dialogue appears', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: EditProfileView(),
