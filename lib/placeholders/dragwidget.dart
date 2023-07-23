@@ -143,6 +143,10 @@ class _DragWidgetState extends State<DragWidget> {
               debugPrint(updatedLikes.toString());
             }
           }
+
+          if (widget.swipeNotifier.value == Swipe.left) {
+            await updateDislikes(profile);
+          }
           widget.swipeNotifier.value = Swipe.none;
           totalDragDistance = 0;
         },
@@ -190,6 +194,9 @@ class _DragWidgetState extends State<DragWidget> {
       ),
     );
   }
+
+  
+
   Future<List<String>> updateLikes() async {
     final usersCollection = FirebaseFirestore.instance.collection('Users');
     final profileDoc = usersCollection.doc(widget.profile.email);
@@ -258,6 +265,26 @@ class _DragWidgetState extends State<DragWidget> {
     }
 
     return [];
+  }
+
+  //updating firebase of loggedin user by adding disliked profiles into the dislikes field
+  Future<void> updateDislikes(Profile profile) async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final profileDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await profileDoc.get();
+
+      if (snapshot.exists) {
+        final likes = List<String>.from(snapshot.data()?['disliked profiles'] ?? []);
+        if (!likes.contains(profile.email)) {
+          likes.add(profile.email);
+          await profileDoc.update({'disliked profiles': likes});
+        }
+      }
+    } catch (error) {
+      debugPrint('Error updating likes: $error');
+    }
   }
 
 

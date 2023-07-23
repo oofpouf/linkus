@@ -23,6 +23,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
   List<String> matchEmails = [];
   List<String> likedProfiles = [];
   bool profilesAvailable = true;
+  List<String> dislikedProfiles = [];
 
   Future<List<Profile>> fetchData() async {
     final currentEmail = FirebaseAuth.instance.currentUser?.email;
@@ -77,7 +78,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
         if (doc.id != currentEmail &&
             criteria != '' &&
             !matchEmails.contains(doc.id) &&
-            !likedProfiles.contains(doc.id)) {
+            !likedProfiles.contains(doc.id) &&
+            !dislikedProfiles.contains(doc.id)) {
           final distance = criteria;
           items.add(Profile(
               year: year,
@@ -124,6 +126,7 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
     processLikes();
     processMatches();
     filterLikes();
+    processDislikes();
   }
 
   @override
@@ -138,6 +141,48 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
       matchedProfiles.add(profile);
     });
     // Perform any other actions you need for a match
+  }
+
+  //updating firebase of loggedin user by adding disliked profiles into the dislikes field
+  Future<void> updateDislikes(Profile profile) async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final profileDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await profileDoc.get();
+
+      if (snapshot.exists) {
+        final likes = List<String>.from(snapshot.data()?['disliked profiles'] ?? []);
+        if (!likes.contains(profile.email)) {
+          likes.add(profile.email);
+          await profileDoc.update({'disliked profiles': likes});
+        }
+      }
+    } catch (error) {
+      debugPrint('Error updating likes: $error');
+    }
+  }
+
+  Future<List<dynamic>> getDislikedProfiles() async {
+    final usersCollection = FirebaseFirestore.instance.collection('Users');
+    final userDoc = usersCollection.doc(currentUserEmail);
+
+    try {
+      final snapshot = await userDoc.get();
+      if (snapshot.exists) {
+        final dislikes = snapshot.data()?['disliked profiles'];
+        return dislikes != null ? List<dynamic>.from(dislikes) : [];
+      }
+    } catch (error) {
+      debugPrint('Error retrieving likes: $error');
+    }
+
+    return [];
+  }
+
+  Future<void> processDislikes() async {
+    List<dynamic> dislikes = await getDislikedProfiles();
+    dislikedProfiles = List<String>.from(dislikes);
   }
 
   //updating firebase of loggedin user by adding the profiles that logged in user has liked for filtering.
@@ -159,6 +204,8 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
       debugPrint('Error updating likes: $error');
     }
   }
+
+
 
   Future<void> filterLikes() async {
     List<dynamic> likes = await getLikedProfiles();
@@ -392,9 +439,11 @@ class _CardsStackWidgetState extends State<CardsStackWidget>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ActionButtonWidget(
-                          onPressed: () {
+                          onPressed: () async {
                             swipeNotifier.value = Swipe.left;
                             _animationController.forward();
+                            Profile swipedProfile = draggableItems.last;
+                            await updateDislikes(swipedProfile);
                           },
                           icon: const Icon(
                             Icons.close,
