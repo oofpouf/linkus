@@ -54,8 +54,8 @@ class _DragWidgetState extends State<DragWidget> {
               return RotationTransition(
                 turns: widget.swipeNotifier.value != Swipe.none
                     ? widget.swipeNotifier.value == Swipe.left
-                        ? const AlwaysStoppedAnimation(-25 / 360)
-                        : const AlwaysStoppedAnimation(25 / 360)
+                        ? const AlwaysStoppedAnimation(-15 / 360)
+                        : const AlwaysStoppedAnimation(15 / 360)
                     : const AlwaysStoppedAnimation(0),
                 child: Stack(
                   children: [
