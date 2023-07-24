@@ -16,7 +16,7 @@ class DragWidget extends StatefulWidget {
     this.isLastCard = false,
     required this.onMatched,
   }) : super(key: key);
-  
+
   final Profile profile;
   final int index;
   final ValueNotifier<Swipe> swipeNotifier;
@@ -39,7 +39,6 @@ class _DragWidgetState extends State<DragWidget> {
     processLikes();
   }
 
-  
   @override
   Widget build(BuildContext context) {
     Profile profile = widget.profile;
@@ -55,8 +54,8 @@ class _DragWidgetState extends State<DragWidget> {
               return RotationTransition(
                 turns: widget.swipeNotifier.value != Swipe.none
                     ? widget.swipeNotifier.value == Swipe.left
-                        ? const AlwaysStoppedAnimation(-15 / 360)
-                        : const AlwaysStoppedAnimation(15 / 360)
+                        ? const AlwaysStoppedAnimation(-25 / 360)
+                        : const AlwaysStoppedAnimation(25 / 360)
                     : const AlwaysStoppedAnimation(0),
                 child: Stack(
                   children: [
@@ -67,7 +66,7 @@ class _DragWidgetState extends State<DragWidget> {
                                 top: 40,
                                 left: 20,
                                 child: Transform.rotate(
-                                  angle: 12,
+                                  angle: 12, // 12
                                   child: TagWidget(
                                     text: "LIKE",
                                     color: Colors.green[400]!,
@@ -105,7 +104,6 @@ class _DragWidgetState extends State<DragWidget> {
             widget.swipeNotifier.value = Swipe.left;
             totalDragDistance = 0;
           }
-          
         },
         onDragEnd: (drag) async {
           if (widget.swipeNotifier.value == Swipe.right &&
@@ -118,6 +116,7 @@ class _DragWidgetState extends State<DragWidget> {
             // Check for a match using the updated likes
             if (checkForMatch(profile)) {
               // Display a notification for the match
+              if (!context.mounted) return;
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -195,8 +194,6 @@ class _DragWidgetState extends State<DragWidget> {
     );
   }
 
-  
-
   Future<List<String>> updateLikes() async {
     final usersCollection = FirebaseFirestore.instance.collection('Users');
     final profileDoc = usersCollection.doc(widget.profile.email);
@@ -212,7 +209,7 @@ class _DragWidgetState extends State<DragWidget> {
           if (!likes.contains(currentUserEmail)) {
             likes.add(currentUserEmail);
             transaction.update(profileDoc, {'likes': likes});
-             // Store the updated likes within the transaction
+            // Store the updated likes within the transaction
           }
           temp = likes;
         }
@@ -224,7 +221,6 @@ class _DragWidgetState extends State<DragWidget> {
     return []; // Return an empty list if the update fails
   }
 
-
   //updating firebase of loggedin user by adding the profiles that logged in user has liked for filtering.
   Future<void> updateLikedProfiles(Profile profile) async {
     final usersCollection = FirebaseFirestore.instance.collection('Users');
@@ -234,7 +230,8 @@ class _DragWidgetState extends State<DragWidget> {
       final snapshot = await profileDoc.get();
 
       if (snapshot.exists) {
-        final likes = List<String>.from(snapshot.data()?['liked profiles'] ?? []);
+        final likes =
+            List<String>.from(snapshot.data()?['liked profiles'] ?? []);
         if (!likes.contains(profile.email)) {
           likes.add(profile.email);
           await profileDoc.update({'liked profiles': likes});
@@ -276,7 +273,8 @@ class _DragWidgetState extends State<DragWidget> {
       final snapshot = await profileDoc.get();
 
       if (snapshot.exists) {
-        final likes = List<String>.from(snapshot.data()?['disliked profiles'] ?? []);
+        final likes =
+            List<String>.from(snapshot.data()?['disliked profiles'] ?? []);
         if (!likes.contains(profile.email)) {
           likes.add(profile.email);
           await profileDoc.update({'disliked profiles': likes});
@@ -287,12 +285,11 @@ class _DragWidgetState extends State<DragWidget> {
     }
   }
 
-
   bool checkForMatch(Profile likedProfile) {
     bool isMatch = likedProfile.likes.contains(currentUserEmail) &&
         emails.contains(likedProfile.email);
     if (isMatch) {
-    // Update the 'matches' field for the logged-in user
+      // Update the 'matches' field for the logged-in user
       FirebaseFirestore.instance
           .collection('Users')
           .doc(currentUserEmail)
@@ -312,11 +309,7 @@ class _DragWidgetState extends State<DragWidget> {
       });
     }
     return isMatch;
-        
   }
-
-
-
 }
 
 class TagWidget extends StatelessWidget {
